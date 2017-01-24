@@ -8,6 +8,34 @@ class SchemaDiagram {
 		this.initDiagram(divId, tables, relationships);
 	}
 
+	/**
+	 * Show or hide a table
+	 *
+	 * @param {string} tableName - The name of the table to show or hide
+	 * @param {boolean} visibility - True shows the table, false hides it and its associated links
+	 */
+	setTableVisibility(tableName, visibility) {
+		var model = this.diagram.model;
+		var tableData = _.findWhere(model.nodeDataArray, {name: tableName});
+		model.setDataProperty(tableData, "visible", visibility)
+	}
+
+	/**
+	 * Show or hide a table attribute
+	 *
+	 * @param {string} tableName - The name of the table containing the attribute to show or hide
+	 * @param {string} attributeName - The name of the attribute to show or hide
+	 * @param {boolean} visibility - True shows the attribute, false hides it
+	 */
+	setAttributeVisibility(tableName, attributeName, visibility) {
+		var model = this.diagram.model;
+		var tableData = _.findWhere(model.nodeDataArray, {name: tableName});
+		// var attributeData = _.findWhere(_.findWhere(model.nodeDataArray, {name: tableName}), {name: attributeName});
+		var attributeData = _.findWhere(_.union(tableData.primary_keys, tableData.foreign_keys, tableData.attributes), {name: attributeName});
+		console.log(attributeData);
+		model.setDataProperty(attributeData, "visible", visibility)
+	}
+
 	initDiagram(divId, tables, relationships) {
 		var $ = go.GraphObject.make;
 
@@ -84,7 +112,8 @@ class SchemaDiagram {
 					go.Panel,
 					"Horizontal",
 					shape,
-					textBlock
+					textBlock,
+					new go.Binding("visible", "visible")
 				);
 			} else {
 				textBlock.margin = new go.Margin(0, 0, 0, 14);
@@ -92,7 +121,8 @@ class SchemaDiagram {
 				var itemTemplate = $(
 					go.Panel,
 					"Horizontal",
-					textBlock
+					textBlock,
+					new go.Binding("visible", "visible")
 				);
 			}
 
@@ -145,6 +175,7 @@ class SchemaDiagram {
 					shadowColor: panelShadowColour
 				},
 				new go.Binding("location", "location").makeTwoWay(),
+				new go.Binding("visible", "visible"),
 				// define the node's outer shape, which will surround the Table
 				$(
 					go.Shape,
@@ -254,12 +285,16 @@ class SchemaDiagram {
 		_.each(tables, function(table) {
 			// Each node must have a key
 			table.key = table.name;
+			table.visible = true;
 
 			// Convert each attribute (string) into an object with a 'name' property
 			_.each(table, function(value, key) {
 				if (_.isArray(value)) {
 					table[key] = _.map(value, function(attribute) {
-						return { name: attribute };
+						return { 
+							name: attribute,
+							visible: true
+						};
 					});
 				};
 			});
