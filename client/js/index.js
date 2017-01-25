@@ -54,6 +54,17 @@ window.onload = function() {
 					"Golden Retriever",
 					"Labdradoodle"
 				]
+			},
+			{
+				name: "Lizard",
+				foreign_keys: [
+					"Doge"
+				],
+				attributes: [
+					"Veiled Chameleon",
+					"Water Monitor",
+					"Satanic Leaf Tailed Gecko"
+				]
 			}
 		]
 
@@ -62,7 +73,8 @@ window.onload = function() {
 			{ from: "Cat", to: "Rabbit", text: "0..N", toText: "1" },
 			{ from: "Cat", to: "Rabbit", text: "2..N", toText: "2" },
 			{ from: "Dog", to: "Cat", text: "1", toText: "2"},
-			{ from: "Rabbit", to: "Dog", text: "1", toText: "1"}
+			{ from: "Rabbit", to: "Dog", text: "1", toText: "1"},
+			{ from: "Lizard", to: "Dog", text: "2..3", toText: "1"}
 		]
 
 	schemaDiagram = new SchemaDiagram("schema_diagram", testTables, testRelationships);

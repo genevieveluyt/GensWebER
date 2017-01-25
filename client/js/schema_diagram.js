@@ -16,8 +16,7 @@ class SchemaDiagram {
 	 */
 	setTableVisibility(tableName, visibility) {
 		var model = this.diagram.model;
-		var tableData = _.findWhere(model.nodeDataArray, {name: tableName});
-		model.setDataProperty(tableData, "visible", visibility)
+		model.setDataProperty(model.findNodeDataForKey(tableName), "visible", visibility);
 	}
 
 	/**
@@ -29,11 +28,27 @@ class SchemaDiagram {
 	 */
 	setAttributeVisibility(tableName, attributeName, visibility) {
 		var model = this.diagram.model;
-		var tableData = _.findWhere(model.nodeDataArray, {name: tableName});
-		// var attributeData = _.findWhere(_.findWhere(model.nodeDataArray, {name: tableName}), {name: attributeName});
+		var tableData = model.findNodeDataForKey(tableName);
 		var attributeData = _.findWhere(_.union(tableData.primary_keys, tableData.foreign_keys, tableData.attributes), {name: attributeName});
-		console.log(attributeData);
 		model.setDataProperty(attributeData, "visible", visibility)
+	}
+
+	/**
+	 * Show all tables that are linked to visible tables
+	 */
+	expandVisibleTables() {
+		var diagram = this.diagram;
+		var model = diagram.model;
+		var visibleTables = _.where(model.nodeDataArray, {visible: true});
+		_.each(visibleTables, function(table) {
+			var connectedNodes = diagram.findNodeForKey(table.key).findNodesConnected();
+			while(connectedNodes.next()) {
+				var connectedTable = connectedNodes.value.data;
+				if (!connectedTable.visible) {
+					model.setDataProperty(connectedTable, "visible", true);
+				}
+			}
+		});
 	}
 
 	initDiagram(divId, tables, relationships) {
