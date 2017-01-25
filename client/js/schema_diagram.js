@@ -3,9 +3,10 @@ class SchemaDiagram {
 	 * @param {string} divId - The id of the div element where the diagram will be placed into
 	 * @param {array} tables - Array of table objects representing the schema of that table
 	 * @param {array} relationships - Array of link objects representing how tables are related by foreign keys
+	 * @param {string} layout - The automatic layout of the tables in the diagram. One of "circular", "grid", "layered digraph" or "force directed"
 	 */
-	constructor(divId, tables, relationships) {
-		this.initDiagram(divId, tables, relationships);
+	constructor(divId, tables, relationships, layout="force directed") {
+		this.initDiagram(divId, tables, relationships, layout);
 	}
 
 	/**
@@ -51,7 +52,32 @@ class SchemaDiagram {
 		});
 	}
 
-	initDiagram(divId, tables, relationships) {
+	/**
+	 * Set the automatic layout of tables in the diagram
+	 *
+	 * @param {string} layout - One of "circular", "grid", "layered digraph" or "force directed"
+	 */
+	setLayout(layout) {
+		this.diagram.layout = (function (layout) {
+			switch(layout) {
+				case "circular":
+					return new go.CircularLayout();
+				case "grid":
+					return new go.GridLayout();
+				case "layered digraph":
+					return new go.LayeredDigraphLayout();
+				case "force directed":
+					return new go.ForceDirectedLayout();
+				default:
+					console.log("setLayout(): Unknown layout '" + layout + "'");
+			}
+		})(layout);
+	}
+
+	/**
+	 * Build the actual diagram and display it in the div element with the given id
+	 */
+	initDiagram(divId, tables, relationships, layout) {
 		var $ = go.GraphObject.make;
 
 		// Diagram Formatting
@@ -170,7 +196,6 @@ class SchemaDiagram {
 				initialContentAlignment: go.Spot.Center,
 				allowDelete: false,
 				allowCopy: false,
-				layout: $(go.ForceDirectedLayout),
 				"undoManager.isEnabled": true
 			}
 		);
@@ -292,7 +317,12 @@ class SchemaDiagram {
 			);
 
 		myDiagram.model = new go.GraphLinksModel(tables, relationships);
+
+		// save a reference to the diagram
 		this.diagram = myDiagram;
+
+		// set the layout of the diagram
+		this.setLayout(layout);
 	}
 
 	// Transform the schema into the structure required for the diagram

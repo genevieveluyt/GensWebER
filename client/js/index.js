@@ -77,5 +77,19 @@ window.onload = function() {
 			{ from: "Lizard", to: "Dog", text: "2..3", toText: "1"}
 		]
 
+	// Create a diagram for testTables and testRelationships in the div element with id "schema_diagram"
+	// Optionally, pass in the diagram layout as a fourth parameter. One of "circular", "grid", "layered digraph" or "force directed"
 	schemaDiagram = new SchemaDiagram("schema_diagram", testTables, testRelationships);
+
+	// Hide Cat table
+	schemaDiagram.setTableVisibility('Cat', false);
+
+	// Hide the Poodle attribute of the Dog table
+	schemaDiagram.setAttributeVisibility('Dog', 'Poodle', false);
+
+	// Expand diagram (show tables connected to currently visible tables)
+	schemaDiagram.expandVisibleTables()
+
+	// Set the diagram layout to Circular
+	schemaDiagram.setLayout("circular");
 }
