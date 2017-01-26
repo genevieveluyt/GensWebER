@@ -92,4 +92,8 @@ window.onload = function() {
 
 	// Set the diagram layout to Circular
 	schemaDiagram.setLayout("circular");
+
+	// Export the diagram (commented out so it doesn't prompt for download when you load the page)
+	// If no filename is provided, the default of "diagram.png" will be used
+	// schemaDiagram.export("oscar.png");
 }

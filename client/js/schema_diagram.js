@@ -75,6 +75,21 @@ class SchemaDiagram {
 	}
 
 	/**
+	 * Export the diagram to a file
+	 *
+	 * @param {string} filename - The file name that will be used when the user tries to export the diagram
+	 */
+	export(filename="diagram.png") {
+		// make a temporary element to force download
+		var a = document.createElement('a');
+		a.href = this.diagram.makeImageData();
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
+
+	/**
 	 * Build the actual diagram and display it in the div element with the given id
 	 */
 	initDiagram(divId, tables, relationships, layout) {
