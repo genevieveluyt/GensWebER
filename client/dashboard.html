@@ -15,20 +15,17 @@
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-		<style>
-		.btn-circle.btn-xl {
-			width: 70px;
-			height: 70px;
-			padding: 10px 16px;
-			font-size: 24px;
-			line-height: 1.33;
-			border-radius: 35px;
-		}
-		</style>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+		<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800" rel="stylesheet" type="text/css">
+
+		<link href="static/css/style.css" rel="stylesheet">
 	</head>
 
 	<body>
-			<!-- Header -->
+	<!-- Header -->
 		<nav class="navbar navbar-default navbar-fixed-top">
 	    	<div class="container">
 	        	<div class="navbar-header">
@@ -47,23 +44,70 @@
   				</ul>
   			</div>
   		</div>
-  		
-  		<div class="container">
-  			<div id="schema_diagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
-  		</div>
+		<button onclick="load_list(testTables)">Click me</button>
+		<div class="row" style="display: inline;">
+			<div class="col-md-2">
 
-  		<div class="add-db" style="position: absolute; bottom: 100px; right: 50px;">
-  			<button type="button" class="btn btn-success btn-circle btn-xl" data-toggle="modal" data-target="#add-project-modal"><i class="glyphicon glyphicon-plus"></i></button>
-  		</div>
-  		
+			</div>
+			<div class="col-md-8" style="padding: 0;">
+				<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" data-toggle="modal">
+					<i class="material-icons">add</i>
+				</button>
+				<div id="schema_diagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px;"></div>
+			</div>
+			<div class="col-md-2" style="padding: 0;">
+				<div id="integration-list" style="width: 100%;">
+					<ul id="accordion">
+						<!--<li>
+							<a class="expand">
+								<div class="right-arrow">+</div>
+								<h2>DCD</h2>
+							</a>
+							<div class="detail">
+								<table>
+									<tr>
+										<td>Hello</td>
+									</tr>
+									<tr>
+										<td>Hello 2</td>
+									</tr>
+								</table>
+							</div>
+						</li>
+						<li>
+							<a class="expand">
+								<div class="right-arrow">+</div>
+								<h2>DCD</h2>
+							</a>
+							<div class="detail">
+								<table>
+									<tr>
+										<td>Hello</td>
+									</tr>
+									<tr>
+										<td>Hello 2</td>
+									</tr>
+								</table>
+							</div>
+						</li>-->
+					</ul>
+				</div>
+			</div>
+		</div>
+	<!--<script>
+		$(function() {
+			$(".expand").on( "click", function() {
+				$(this).next().slideToggle(200);
+				$expand = $(this).find(">:first-child");
 
-  		<!-- Footer -->
-  		<nav class="navbar navbar-default navbar-fixed-bottom">
-	    	<div class="container" style="line-height: 50px; text-align: center;">
-	          	<a class="text-muted" href="#">Backslash</a>
-	      	</div>
-	    </nav>
-
+				if($expand.text() == "+") {
+					$expand.text("-");
+				} else {
+					$expand.text("+");
+				}
+			});
+		});
+	</script>-->
 	    <!-- Modal -->
 	    <div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 	    	<div class="modal-dialog" role="document">
