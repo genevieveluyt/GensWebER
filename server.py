@@ -9,7 +9,7 @@ import os
 import re
 
 
-app = Flask(__name__,static_folder=os.path.abspath(os.getcwd()+'/client/html/'))
+app = Flask(__name__,static_folder=os.path.abspath(os.getcwd()+'/client/'))
 
 @app.route("/")
 def hello():
@@ -22,7 +22,6 @@ def serve_static(filename):
 
 @app.route("/dbSchema",methods=['GET','POST'])
 def reSchema():
-    print('REQUEST.JSON')
     reDic = request.json
     schema = jsonify(getDBschema(reDic['user'],reDic['name'],reDic['password'],reDic['host']))
     return(schema)
