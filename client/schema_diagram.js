@@ -35,21 +35,22 @@ class SchemaDiagram {
 	}
 
 	/**
-	 * Show all tables that are linked to visible tables
+	 * Show all tables that are linked to currently selected table
 	 */
-	expandVisibleTables() {
+	expandSelectedTable() {
 		var diagram = this.diagram;
 		var model = diagram.model;
-		var visibleTables = _.where(model.nodeDataArray, {visible: true});
-		_.each(visibleTables, function(table) {
-			var connectedNodes = diagram.findNodeForKey(table.key).findNodesConnected();
-			while(connectedNodes.next()) {
-				var connectedTable = connectedNodes.value.data;
+
+		var selectedTables = diagram.selection.iterator;
+		while(selectedTables.next()) {
+			var connectedTables = selectedTables.value.findNodesConnected();
+			while(connectedTables.next()) {
+				var connectedTable = connectedTables.value.data;
 				if (!connectedTable.visible) {
 					model.setDataProperty(connectedTable, "visible", true);
 				}
 			}
-		});
+		}
 	}
 
 	/**
