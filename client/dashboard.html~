@@ -44,7 +44,7 @@
   				</ul>
   			</div>
   		</div>
-		<button onclick="load_list(rowanSchema)">Click me</button>
+		<button id="load">Click me</button>
 		<div class="row" style="display: inline;">
 			<div class="col-md-2">
 
