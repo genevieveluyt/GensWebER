@@ -2,9 +2,9 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>Gen's Web ER</title>		
-		<script src="schema_diagram.js"></script>
+		<title>Gen's Web ER</title>
 		<script src="index.js"></script>
+		<script src="schema_diagram.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<!-- Go.js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.6.22/go-debug.js"></script>
