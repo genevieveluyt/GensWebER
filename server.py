@@ -23,10 +23,7 @@ def serve_static(filename):
 @app.route("/dbSchema",methods=['GET','POST'])
 def reSchema():
     reDic = request.json
-    print("Cucked: The first coming ")
-    print(request.json)
     schema = jsonify(getDBschema(reDic['user'],reDic['name'],reDic['password'],reDic['host']))
-    print("Cucked: The second coming")
     return(schema)
 
 def getDBschema(u,d,p,h):
@@ -34,8 +31,7 @@ def getDBschema(u,d,p,h):
     allTabsCurs = cnx.cursor()
     allTabsCurs.execute("show tables")
     tableNames = allTabsCurs.fetchall()
-    print("select * from information_schema.referential_constraints where constraint_schema = '"+ d +"';")
-    allTabsCurs.execute("select * from information_schema.referential_constraints where constraint_schema = "+ d +";")
+    allTabsCurs.execute("select * from information_schema.referential_constraints where constraint_schema = '"+ d +"';")
     fkNames = allTabsCurs.fetchall()
     data = {}
     tables = []
@@ -50,7 +46,6 @@ def getDBschema(u,d,p,h):
         tables.append({"name":table[0],'attributes':cols})
     data['tables'] = tables
 	
-    print(fkNames)
     for n in fkNames:
         relationships.append({'from':n[-2],'to':n[-1]})
     data['relationships'] = relationships
