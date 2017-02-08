@@ -83,7 +83,8 @@ class SchemaDiagram {
 					return new go.CircularLayout();
 				case "grid":
 					return new go.GridLayout();
-				case "digraph":
+				case "gg":
+					console.log("Layered. Digraph.");
 					return new go.LayeredDigraphLayout();
 				case "directed":
 					return new go.ForceDirectedLayout();

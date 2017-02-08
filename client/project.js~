@@ -36,6 +36,7 @@ class Project {
 
 	load_list(){
 		var tables = this.data.tables;
+		console.log(tables.length);	
 
 		// Creates list
 		var list = document.getElementById('accordion');
