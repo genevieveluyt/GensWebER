@@ -92,8 +92,11 @@ window.onload = function() {
 	document.getElementById('download-button').onclick = function() {
 		activeProject.diagram.export();
 	}
+
+	// TODO - the Layout dropdown needs to call activeDiagram.diagram.setLayout() for whatever layout is selected from the dropdown. See the function comments in schema_diagram.js for how to use the setLayout function
 }
 
+// TODO - don't let projects be added if the name exists already in the projects array
 function addProject() {
 	var form = document.getElementById('add-project-form');
 	var project = new Project(
@@ -129,6 +132,8 @@ function addProject() {
 	row.appendChild(cell);
 
 	// Edit and Delete buttons
+	// TODO - Edit should let you change the name of the project
+	// TODO - Delete should remove the project from the projects array, the row in the projects-table table and the div in the schema_diagrams div
 	cell = document.createElement('td');
 	cell.innerHTML = '<button class="btn btn-xl"><i class="glyphicon glyphicon-pencil"></i></button><button class="btn btn-xl"><i class="glyphicon glyphicon-trash"></i></button>';
 
