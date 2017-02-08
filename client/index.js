@@ -1,18 +1,18 @@
 window.onload = function() {
 
-    //var connectionInfo = {
-        //user:'root',
-        //name:'oscar15_bc',
-        //password:'@scar2015', 
-        //host:'127.0.0.1'
-    //}
-
     var connectionInfo = {
+        user:'root',
+        name:'oscar15_bc',
+        password:'@scar2015', 
+        host:'127.0.0.1	'
+    }
+
+    /* var connectionInfo = {
         user:'root',
         name:'northwind',
         password:'1234', 
         host:'127.0.0.1'
-    }
+    }*/
 
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() { 
@@ -20,6 +20,9 @@ window.onload = function() {
             //console.log(xmlHttp.responseText);
             var rowanSchema = JSON.parse(xmlHttp.responseText);
             console.log(rowanSchema.tables);
+	console.log("this is before");
+	    load_list(rowanSchema.tables);
+	console.log("this is after");
             var schemaDiagram = new SchemaDiagram("schema_diagram", rowanSchema.tables, rowanSchema.relationships);
 	}
     }
@@ -41,9 +44,11 @@ window.onload = function() {
 	// Export the diagram (commented out so it doesn't prompt for download when you load the page)
 	// If no filename is provided, the default of "diagram.png" will be used
 	// schemaDiagram.export("oscar.png");
-}
+};
 
 function load_list(tables){
+	console.log(tables.length);	
+
 	// Creates list
 	var list = document.getElementById('accordion');
 
@@ -75,12 +80,12 @@ function load_list(tables){
 		var table = document.createElement('table');
 
 		for(var n=0; n<tables[i].attributes.length; n++) {
+			console.log(tables[i].attributes);
 			var row = table.insertRow(-1);
 
 			var cell1 = row.insertCell(0);
 
-			cell1.innerHTML = tables[i].attributes[n].name;
-			console.log(cell1.innerHTML);
+			cell1.innerHTML = tables[i].attributes[n];
 		}
 		div_table.appendChild(table);
 	}
@@ -97,19 +102,5 @@ function load_list(tables){
 			}
 		});
 	});
-
-	/*for(var i=0; i<tables.length; i++) {
-		console.log("Name " + tables[i].name);
-		if(_.has(tables[i], "foreign_keys")) {
-			for(var m=0; m<tables[i].foreign_keys.length; m++) {
-				console.log("Foreign Key " + tables[i].foreign_keys[m].name);
-			}
-		}
-		else {
-			console.log("No foreign keys in " + tables[i].name);
-		}
-		for(var n=0; n<tables[i].attributes.length; n++) {
-			console.log(tables[i].attributes[n].name)
-		}
-	}*/
 }
+
