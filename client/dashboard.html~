@@ -54,13 +54,6 @@
 		  			<ul class="nav navbar-nav navbar-right">
 						<li><a href="#" id='expand-button'><i class="glyphicon glyphicon-resize-full"></i> Expand</a></li>
 						<li class="dropdown">
-							<!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Layout <span class="caret"><span></a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Force Directed</a></li>
-								<li><a href="#">Circular</a></li>
-								<li><a href="#">Grid</a></li>
-								<li><a href="#">Layered Digraph</a></li>
-							</ul>-->
 							<select id="layout">
 								<option value="directed">Force Directed</option>
 								<option value="circular">Circular</option>

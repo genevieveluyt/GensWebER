@@ -3,13 +3,6 @@ window.onload = function() {
 	projects = [];
 	activeProject = null;
 
-      var connectionInfo = {
-        user:'root',
-        name:'oscar15_bc',
-        password:'@scar2015', 
-        host:'127.0.0.1'
-    }
-
     /* var connectionInfo = {
         user:'root',
         name:'northwind',
@@ -17,22 +10,9 @@ window.onload = function() {
         host:'127.0.0.1'
     }*/
 
-    // Get Request
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            //console.log(xmlHttp.responseText);
-            var rowanSchema = JSON.parse(xmlHttp.responseText);
-            console.log(rowanSchema.tables);
-	    load_list(rowanSchema.tables);
-            var schemaDiagram = new SchemaDiagram("schema_diagram", rowanSchema.tables, rowanSchema.relationships);
+	document.getElementById('save-project-button').onclick = function() {
+		addProject();
 	}
-    }
-    xmlHttp.open("POST","http://127.0.0.1:5000/dbSchema", true); // true for asynchronous 
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send(JSON.stringify(connectionInfo));	
-
-	document.getElementById('save-project-button').onclick = addProject;
 
 	document.getElementById('expand-button').onclick = function() {
 		activeProject.diagram.expandSelectedTable();
@@ -49,9 +29,8 @@ window.onload = function() {
 	// Hunter
 	var l = document.getElementById('layout');
 	l.onchange = function() {
-		console.log("This has changed");
 		console.log("Changed layout to " + l.options[l.selectedIndex].value);
-		schemaDiagram.setLayout(l.options[l.selectedIndex].value);
+		activeProject.diagram.setLayout(l.options[l.selectedIndex].value);
 	}
 	// End Hunter
 };
@@ -113,7 +92,29 @@ function addProject() {
 	table.appendChild(row);
 
 	setActiveProject(project.id);
+
+	var connectionInfo = {
+	        user:user,
+	        name:db_name,
+	        password:password, 
+	        host:host
+	    }
+
 	}
+	// Get Request
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            //console.log(xmlHttp.responseText);
+            var rowanSchema = JSON.parse(xmlHttp.responseText);
+            console.log(rowanSchema.tables);
+	    load_list(rowanSchema.tables);
+            var schemaDiagram = new SchemaDiagram("schema_diagram", rowanSchema.tables, rowanSchema.relationships);
+	}
+    }
+    xmlHttp.open("POST","http://127.0.0.1:5000/dbSchema", true); // true for asynchronous 
+    xmlHttp.setRequestHeader("Content-type", "application/json");
+    xmlHttp.send(JSON.stringify(connectionInfo));
 }
 
 
