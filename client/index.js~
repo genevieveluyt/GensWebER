@@ -137,7 +137,7 @@ window.onload = function() {
 	}
 
 	// TODO - the Layout dropdown needs to call activeDiagram.diagram.setLayout() for whatever layout is selected from the dropdown. See the function comments in schema_diagram.js for how to use the setLayout function
-};
+}
 
 // TODO - don't let projects be added if the name exists already in the projects array
 function addProject() {
