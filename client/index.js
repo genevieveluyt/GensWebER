@@ -5,9 +5,9 @@ window.onload = function() {
 
       var connectionInfo = {
         user:'root',
-        name:'oscar15_bc',
+        name:'test',
         password:'@scar2015', 
-        host:'127.0.0.1	'
+        host:'127.0.0.1'
     }
 
     /* var connectionInfo = {
@@ -136,12 +136,34 @@ window.onload = function() {
 		activeProject.diagram.export();
 	}
 
-	// TODO - the Layout dropdown needs to call activeDiagram.diagram.setLayout() for whatever layout is selected from the dropdown. See the function comments in schema_diagram.js for how to use the setLayout function
+	
+	// TODO - the Layout dropdown needs to call activeDiagram.diagram.setLayout() 
+	// for whatever layout is selected from the dropdown. 
+	// See the function comments in schema_diagram.js for how to use the setLayout function
+	// Hunter
+	var l = document.getElementById('layout');
+	l.onchange = function() {
+		console.log("Changed layout to " + l.options[l.selectedIndex].value);
+		schemaDiagram.setLayout(l.options[l.selectedIndex].value);
+	}
+	// End Hunter
 };
 
-// TODO - don't let projects be added if the name exists already in the projects array
+
 function addProject() {
 	var form = document.getElementById('add-project-form');
+	
+	// TODO - don't let projects be added if the name exists already in the projects array
+	// Hunter
+	var uniqueName = true;
+	for(i=0; i < projects.length; i++) {
+		if(form.project_name.value == projects[i].name) {
+			repeatedName = false;
+		}
+	}
+	if(uniqueName) {
+	// End Hunter
+
 	var project = new Project(
 		name = form.project_name.value,
 		db_name = form.db_name.value,
@@ -178,13 +200,16 @@ function addProject() {
 	// TODO - Edit should let you change the name of the project
 	// TODO - Delete should remove the project from the projects array, the row in the projects-table table and the div in the schema_diagrams div
 	cell = document.createElement('td');
-	cell.innerHTML = '<button class="btn btn-xl"><i class="glyphicon glyphicon-pencil"></i></button><button class="btn btn-xl"><i class="glyphicon glyphicon-trash"></i></button>';
+	cell.innerHTML = '<button class="btn btn-xl edit-button"><i class="glyphicon glyphicon-pencil"></i></button><button class="btn btn-xl delete-button"><i class="glyphicon glyphicon-trash"></i></button>';
 
 	row.appendChild(cell);
 	table.appendChild(row);
 
 	setActiveProject(project.id);
+	}
 }
+
+
 
 function setActiveProject(projectId) {
 	activeProject = _.find(projects, function(project) {
