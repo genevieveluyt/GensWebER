@@ -81,7 +81,7 @@
 				<div id="schema_diagram" style="background-color: white; border: solid 1px black; width: 100%; height: 700px;"></div>
 			</div>
 			<div class="col-md-2" style="padding: 0;">
-				<div class="containter" style="height:100%; overflow: scroll;">
+				<div class="containter" style="height:700px; overflow: scroll; border-top: 1px solid black; border-bottom: 1px solid black; border-right: 1px solid black;">
 					<div id="integration-list" style="width: 100%;">
 						<ul id="accordion">
 						</ul>
