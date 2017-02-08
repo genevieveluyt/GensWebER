@@ -1,5 +1,9 @@
 window.onload = function() {
 
+	// keep track of projects
+	projects = [];
+	activeProject = null;
+
 	// Create a Go.js diagram with test data
 	testTables = 
 		[
@@ -77,41 +81,80 @@ window.onload = function() {
 			{ from: "Lizard", to: "Dog", text: "2..3", toText: "1"}
 		]
 
-	// Create a diagram for testTables and testRelationships in the div element with id "schema_diagram"
-	// Optionally, pass in the diagram layout as a fourth parameter. One of "circular", "grid", "layered digraph" or "force directed"
-	//schemaDiagram = new SchemaDiagram("schema_diagram", testTables, testRelationships);
-    
-    var connectionInfo = {
-        user:'root',
-        name:'northwind',
-        password:'1234', 
-        host:'127.0.0.1'
-    }
+	
 
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            //console.log(xmlHttp.responseText);
-            var rowanSchema = JSON.parse(xmlHttp.responseText);
-            console.log(rowanSchema.tables);
-            schemaDiagram = new SchemaDiagram("big_ol_div", rowanSchema.tables, rowanSchema.relationships);
-    }
-    xmlHttp.open("POST","http://127.0.0.1:5000/dbSchema", true); // true for asynchronous 
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send(JSON.stringify(connectionInfo));
-	// Hide Cat table
-	//schemaDiagram.setTableVisibility('Cat', false);
+	document.getElementById('save-project-button').onclick = addProject;
 
-	// Hide the Poodle attribute of the Dog table
-	//schemaDiagram.setAttributeVisibility('Dog', 'Poodle', false);
+	document.getElementById('expand-button').onclick = function() {
+		activeProject.diagram.expandSelectedTable();
+	}
 
-	// Expand diagram (show tables connected to currently visible tables)
-	//schemaDiagram.expandVisibleTables()
+	document.getElementById('download-button').onclick = function() {
+		activeProject.diagram.export();
+	}
+}
 
-	// Set the diagram layout to Circular
-	//schemaDiagram.setLayout("circular");
+function addProject() {
+	var form = document.getElementById('add-project-form');
+	var project = new Project(
+		name = form.project_name.value,
+		db_name = form.db_name.value,
+		user = form.username.value,
+		password = form.password.value,
+		host = form.host.value,
+		port = form.port.value
+	)
+	projects.push(project)
 
-	// Export the diagram (commented out so it doesn't prompt for download when you load the page)
-	// If no filename is provided, the default of "diagram.png" will be used
-	// schemaDiagram.export("oscar.png");
+	var div = document.createElement('div');
+	div.id = project.divId;
+	document.getElementById('schema_diagrams').appendChild(div);
+
+	var table = document.getElementById('projects-table');
+
+	var row = document.createElement('tr');
+	row.setAttribute('projectdivid', project.divId);
+
+	// Project Name
+	var cell = document.createElement('td');
+	var a = document.createElement('a');
+	a.href = '#';
+	var text = document.createTextNode(project.name);
+	cell.onclick = function() {
+		setActiveProject(project.id);
+	}
+
+	a.appendChild(text);
+	cell.appendChild(a);
+	row.appendChild(cell);
+
+	// Edit and Delete buttons
+	cell = document.createElement('td');
+	cell.innerHTML = '<button class="btn btn-xl"><i class="glyphicon glyphicon-pencil"></i></button><button class="btn btn-xl"><i class="glyphicon glyphicon-trash"></i></button>';
+
+	row.appendChild(cell);
+	table.appendChild(row);
+
+	setActiveProject(project.id);
+}
+
+function setActiveProject(projectId) {
+	activeProject = _.find(projects, function(project) {
+		return project.id == projectId;
+	})
+
+	// Highlight the table row with the active project
+	_.each(document.getElementById('projects-table').childNodes, function(row) {
+		if (row.getAttribute('projectdivid') == activeProject.divId) {
+			row.setAttribute('class', 'bg-success');
+		} else {
+			row.setAttribute('class', '');
+		}
+	})
+
+	// Only show the div with the active project diagram
+	_.each(document.getElementById('schema_diagrams').childNodes, function(node) {
+		node.style.display = 'none';
+	})
+	document.getElementById(activeProject.divId).style.display = 'block';
 }
