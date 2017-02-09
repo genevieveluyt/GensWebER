@@ -9,6 +9,81 @@ window.onload = function() {
         password:'1234', 
         host:'127.0.0.1'
     }*/
+    testTables = 
+		[
+			{
+				name: "Cat",
+				primary_keys: [
+					"American Bobtail"
+				],
+				foreign_keys: [
+					"Fuzzy Lop"
+				],
+				attributes: [
+					"American Shorthair",
+					"American Wirehair",
+					"Balinese",
+					"Bengal",
+					"Birman",
+					"Bombay",
+				]
+			},
+			{
+				name: "Rabbit",
+				primary_keys: [
+					"Fuzzy Lop",
+					"Sable"
+				],
+				attributes: [
+					"Angora",
+					"Beveren",
+					"Britannia Petite",
+					"California",
+					"Checkered Giant",
+					"Cinnamon",
+					"Dutch",
+					"English Spot",
+					"Flemish Giant"
+				]
+			},
+			{
+				name: "Dog",
+				primary_keys: [
+					"Doge"
+				],
+				foreign_keys: [
+					"Sable",
+					"American Bobtail"
+				],
+				attributes: [
+					"Siberian Husky",
+					"Shiba Inu",
+					"Poodle",
+					"Golden Retriever",
+					"Labdradoodle"
+				]
+			},
+			{
+				name: "Lizard",
+				foreign_keys: [
+					"Doge"
+				],
+				attributes: [
+					"Veiled Chameleon",
+					"Water Monitor",
+					"Satanic Leaf Tailed Gecko"
+				]
+			}
+		]
+
+	testRelationships =
+		[
+			{ from: "Cat", to: "Rabbit", text: "0..N", toText: "1" },
+			{ from: "Cat", to: "Rabbit", text: "2..N", toText: "2" },
+			{ from: "Dog", to: "Cat", text: "1", toText: "2"},
+			{ from: "Rabbit", to: "Dog", text: "1", toText: "1"},
+			{ from: "Lizard", to: "Dog", text: "2..3", toText: "1"}
+		]
 
 	document.getElementById('save-project-button').onclick = function() {
 		addProject();
@@ -16,17 +91,13 @@ window.onload = function() {
 
 	document.getElementById('expand-button').onclick = function() {
 		activeProject.diagram.expandSelectedTable();
+		activeProject.load_list();
 	}
 
 	document.getElementById('download-button').onclick = function() {
 		activeProject.diagram.export();
 	}
 
-	
-	// TODO - the Layout dropdown needs to call activeDiagram.diagram.setLayout() 
-	// for whatever layout is selected from the dropdown. 
-	// See the function comments in schema_diagram.js for how to use the setLayout function
-	// Hunter
 	var l = document.getElementById('layout');
 	l.onchange = function() {
 		console.log("Changed layout to " + l.options[l.selectedIndex].value);
@@ -123,78 +194,3 @@ function setActiveProject(projectId) {
 		activeProject.load_list(activeProject.data.tables);
 	}
 }
-
-function toggleTable(id) {
-	console.log(id);
-}
-
-/*function load_list(tables){
-	console.log(tables.length);	
-
-	// Creates list
-	var list = document.getElementById('accordion');
-
-	for(var i = 0; i < tables.length; i++) {
-		var item = document.createElement('li');
-		list.appendChild(item);
-
-		var a = document.createElement('a');
-		item.appendChild(a);
-		a.className = "expand";
-
-		var div = document.createElement('div');
-		a.appendChild(div);
-		div.className = "right-arrow";
-		div.innerHTML = "+";
-
-		var h2 = document.createElement('h2');
-		h2.innerHTML = tables[i].name;
-		a.appendChild(h2);
-		
-		var tog = document.createElement('button');
-		tog.innerHTML = "Hide";
-		tog.onclick = function(evt) {
-					console.log(tables[i].name);
-					activeProject.diagram.setTableVisibility(tables[i].name, false);
-				};
-		/*if (typeof window.addEventListener === 'function') {
-			(function (_tog) {
-				tog.addEventListener('click', function() {
-					console.log(tables[i].name);
-					activeProject.setTableVisibility(tables[i].name, false);
-				});
-			}) (tog);
-		}*//*
-
-		a.appendChild(tog);
-
-		var div_table = document.createElement('div');
-		item.appendChild(div_table);
-		div_table.className = "detail";
-
-		// Creates table
-		var table = document.createElement('table');
-
-		for(var n=0; n<tables[i].attributes.length; n++) {
-			var row = table.insertRow(-1);
-
-			var cell1 = row.insertCell(0);
-
-			cell1.innerHTML = tables[i].attributes[n];
-		}
-		div_table.appendChild(table);
-	}
-
-	$(function() {
-		$(".expand").on( "click", function() {
-			$(this).next().slideToggle(200);
-			$expand = $(this).find(">:first-child");
-
-			if($expand.text() == "+") {
-				$expand.text("-");
-			} else {
-				$expand.text("+");
-			}
-		});
-	});*/
-//}
