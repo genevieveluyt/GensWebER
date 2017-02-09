@@ -59,14 +59,13 @@
 								<option value="directed">Force Directed</option>
 								<option value="circular">Circular</option>
 								<option value="grid">Grid</option>
-								<option value="gg">Layered Digraph</option>
+								<option value="digraph">Layered Digraph</option>
 							</select>
 						</li>
 						<li><a href="#" id='download-button'><i class="glyphicon glyphicon-save"></i> Download</a></li>
 					</ul>
 	  			</div>
 	  		</nav>
-  			<div id="schema_diagrams"></div>
   		</div>
 
   		<div class="add-db">
@@ -155,6 +154,35 @@
 		          	<div class="modal-footer">
 		            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 		            	<button type="button" id="save-project-button" class="btn btn-primary">Save changes</button>
+		          	</div>
+	        	</div>
+	      	</div>
+	    </div>
+
+	    <!-- Modal Edit -->
+	    <div class="modal fade" id="edit-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+	    	<div class="modal-dialog" role="document">
+	        	<div class="modal-content">
+	          		<div class="modal-header">
+	            		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	            		<h4 class="modal-title" id="myModalLabel">Change Project Name</h4>
+	          		</div>
+	          		<div class="modal-body">
+			    		<form id='add-project-form'>
+			    			<div class="row">
+			    				<div class="col-xs-10 col-xs-offset-1">
+								<div class="form-group">
+									<label for="project_name">Project Name</label>
+									<input type="text" class="form-control" name="project_name" placeholder="">
+									<input type="text" class="form-control" name="project_name" id="project-id" placeholder="" style="display:none;">
+								</div>
+							</div>
+						</div>
+					</form>
+	          		</div>
+		          	<div class="modal-footer">
+		            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		            	<button type="button" id="edit-project-button" class="btn btn-primary">Save changes</button>
 		          	</div>
 	        	</div>
 	      	</div>

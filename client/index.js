@@ -69,11 +69,13 @@ function addProject() {
 
 		var row = document.createElement('tr');
 		row.setAttribute('projectdivid', project.divId);
+		row.id = name;
 
 		// Project Name
 		var cell = document.createElement('td');
 		var a = document.createElement('a');
 		a.href = '#';
+		a.id="cell_"+project.id;
 		var text = document.createTextNode(project.name);
 		cell.onclick = function() {
 			setActiveProject(project.id);
@@ -86,10 +88,20 @@ function addProject() {
 		// Edit and Delete buttons
 		// TODO - Edit should let you change the name of the project
 		// TODO - Delete should remove the project from the projects array, the row in the projects-table table and the div in the schema_diagrams div
-		cell = document.createElement('td');
-		cell.innerHTML = '<button class="btn btn-xl edit-button"><i class="glyphicon glyphicon-pencil"></i></button><button class="btn btn-xl delete-button"><i class="glyphicon glyphicon-trash"></i></button>';
-
-		row.appendChild(cell);
+		cell1 = document.createElement('td');
+		cell1.innerHTML = '<button class="btn btn-xl edit-button"><i class="glyphicon glyphicon-pencil"></i></button>';		
+		cell1.onclick = function() {
+			editRow(project.id);		
+		}
+		cell1.width = '40px';
+		cell2 = document.createElement('td');
+		cell2.innerHTML = '<button class="btn btn-xl delete-button"><i class="glyphicon glyphicon-trash"></i></button>';	
+		cell2.onclick = function() {
+			deleteRow(row.id, div.id, project.id);		
+		}
+		cell2.width = '40px';
+		row.appendChild(cell1);
+		row.appendChild(cell2);
 		table.appendChild(row);
 
 		setActiveProject(project.id);
@@ -124,77 +136,22 @@ function setActiveProject(projectId) {
 	}
 }
 
+function deleteRow(rowId, divId, projectId) {
+	var div = document.getElementById(divId);
+	div.parentNode.removeChild(div);	
+	var row = document.getElementById(rowId);
+	row.parentNode.removeChild(row);	
+	for(i=0; i < projects.length; i++) {
+		if(projectId == projects[i].id) {
+			projects.slice[i,1];
+		}
+	}
+}
+function editRow(cellId) {
+	console.log(document.getElementById("cell_"+cellId).innerHTML);
+}
+
+
 function toggleTable(id) {
 	console.log(id);
 }
-
-/*function load_list(tables){
-	console.log(tables.length);	
-
-	// Creates list
-	var list = document.getElementById('accordion');
-
-	for(var i = 0; i < tables.length; i++) {
-		var item = document.createElement('li');
-		list.appendChild(item);
-
-		var a = document.createElement('a');
-		item.appendChild(a);
-		a.className = "expand";
-
-		var div = document.createElement('div');
-		a.appendChild(div);
-		div.className = "right-arrow";
-		div.innerHTML = "+";
-
-		var h2 = document.createElement('h2');
-		h2.innerHTML = tables[i].name;
-		a.appendChild(h2);
-		
-		var tog = document.createElement('button');
-		tog.innerHTML = "Hide";
-		tog.onclick = function(evt) {
-					console.log(tables[i].name);
-					activeProject.diagram.setTableVisibility(tables[i].name, false);
-				};
-		/*if (typeof window.addEventListener === 'function') {
-			(function (_tog) {
-				tog.addEventListener('click', function() {
-					console.log(tables[i].name);
-					activeProject.setTableVisibility(tables[i].name, false);
-				});
-			}) (tog);
-		}*//*
-
-		a.appendChild(tog);
-
-		var div_table = document.createElement('div');
-		item.appendChild(div_table);
-		div_table.className = "detail";
-
-		// Creates table
-		var table = document.createElement('table');
-
-		for(var n=0; n<tables[i].attributes.length; n++) {
-			var row = table.insertRow(-1);
-
-			var cell1 = row.insertCell(0);
-
-			cell1.innerHTML = tables[i].attributes[n];
-		}
-		div_table.appendChild(table);
-	}
-
-	$(function() {
-		$(".expand").on( "click", function() {
-			$(this).next().slideToggle(200);
-			$expand = $(this).find(">:first-child");
-
-			if($expand.text() == "+") {
-				$expand.text("-");
-			} else {
-				$expand.text("+");
-			}
-		});
-	});*/
-//}
