@@ -3,7 +3,7 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import send_from_directory
-import mysql.connector
+# import mysql.connector
 import time
 import os
 import re
@@ -23,10 +23,12 @@ def serve_static(filename):
 @app.route("/dbSchema",methods=['GET','POST'])
 def reSchema():
     reDic = request.json
+    print(reDic)
     schema = jsonify(getDBschema(reDic['user'],reDic['name'],reDic['password'],reDic['host']))
     return(schema)
 
 def getDBschema(u,d,p,h):
+    print([u,d,p,h])
     cnx = mysql.connector.connect(user=u, database=d, password=p,host=h)
     allTabsCurs = cnx.cursor()
     allTabsCurs.execute("show tables")

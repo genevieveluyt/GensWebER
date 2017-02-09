@@ -106,7 +106,7 @@ class Project {
 				if(evt.target.tagName === "BUTTON") {
 					return;
 				} else {
-					$(".expand").next().slideToggle(200);
+					$(this).next().slideToggle(200);
 					var $expand = $(this).find(">:first-child");
 
 					if($expand.text() == "+") {

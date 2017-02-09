@@ -3,7 +3,7 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import send_from_directory
-# import mysql.connector
+import mysql.connector
 import time
 import os
 import re
