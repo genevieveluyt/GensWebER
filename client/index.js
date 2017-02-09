@@ -157,21 +157,12 @@ function addProject() {
 		row.appendChild(cell);
 
 		// Edit and Delete buttons
-		// TODO - Edit should let you change the name of the project
-		// TODO - Delete should remove the project from the projects array, the row in the projects-table table and the div in the schema_diagrams div
-		cell1 = document.createElement('td');
-		cell1.innerHTML = '<button class="btn btn-xl edit-button"><i class="glyphicon glyphicon-pencil"></i></button>';		
-		cell1.onclick = function() {
-			editRow(project.id);		
-		}
-		cell1.width = '40px';
 		cell2 = document.createElement('td');
 		cell2.innerHTML = '<button class="btn btn-xl delete-button"><i class="glyphicon glyphicon-trash"></i></button>';	
 		cell2.onclick = function() {
 			deleteRow(row.id, div.id, project.id);		
 		}
 		cell2.width = '40px';
-		row.appendChild(cell1);
 		row.appendChild(cell2);
 		table.appendChild(row);
 

@@ -205,7 +205,6 @@ function setActiveProject(projectId) {
 	if (activeProject.data) {
 		activeProject.load_list(activeProject.data.tables);
 	}
-<<<<<<< HEAD
 }
 
 function deleteRow(rowId, divId, projectId) {
@@ -219,14 +218,7 @@ function deleteRow(rowId, divId, projectId) {
 		}
 	}
 }
-function editRow(cellId) {
-	console.log(document.getElementById("cell_"+cellId).innerHTML);
-}
-
 
 function toggleTable(id) {
 	console.log(id);
 }
-=======
-}
->>>>>>> 3ec2d08941e3eb1b6c7423e9f3a24d8761dfddff
