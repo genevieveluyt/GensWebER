@@ -10,17 +10,6 @@ class SchemaDiagram {
 	}
 
 	/**
-	 * Show or hide a table
-	 *
-	 * @param {string} tableName - The name of the table to show or hide
-	 * @param {boolean} visibility - True shows the table, false hides it and its associated links
-	 */
-	setTableVisibility(tableName, visibility) {
-		var model = this.diagram.model;
-		model.setDataProperty(model.findNodeDataForKey(tableName), "visible", visibility);
-	}
-
-	/**
 	 * Check if a table is visible
 	 */
 	isTableVisible(tableName) {
@@ -36,6 +25,17 @@ class SchemaDiagram {
 		var tableData = model.findNodeDataForKey(tableName);
 		var attributeData = _.findWhere(_.union(tableData.primary_keys, tableData.foreign_keys, tableData.attributes), {name: attributeName});
 		return attributeData.visible;
+	}
+
+	/**
+	 * Show or hide a table
+	 *
+	 * @param {string} tableName - The name of the table to show or hide
+	 * @param {boolean} visibility - True shows the table, false hides it and its associated links
+	 */
+	setTableVisibility(tableName, visibility) {
+		var model = this.diagram.model;
+		model.setDataProperty(model.findNodeDataForKey(tableName), "visible", visibility);
 	}
 
 	/**

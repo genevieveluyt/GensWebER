@@ -9,6 +9,81 @@ window.onload = function() {
         password:'1234', 
         host:'127.0.0.1'
     }*/
+    testTables = 
+		[
+			{
+				name: "Cat",
+				primary_keys: [
+					"American Bobtail"
+				],
+				foreign_keys: [
+					"Fuzzy Lop"
+				],
+				attributes: [
+					"American Shorthair",
+					"American Wirehair",
+					"Balinese",
+					"Bengal",
+					"Birman",
+					"Bombay",
+				]
+			},
+			{
+				name: "Rabbit",
+				primary_keys: [
+					"Fuzzy Lop",
+					"Sable"
+				],
+				attributes: [
+					"Angora",
+					"Beveren",
+					"Britannia Petite",
+					"California",
+					"Checkered Giant",
+					"Cinnamon",
+					"Dutch",
+					"English Spot",
+					"Flemish Giant"
+				]
+			},
+			{
+				name: "Dog",
+				primary_keys: [
+					"Doge"
+				],
+				foreign_keys: [
+					"Sable",
+					"American Bobtail"
+				],
+				attributes: [
+					"Siberian Husky",
+					"Shiba Inu",
+					"Poodle",
+					"Golden Retriever",
+					"Labdradoodle"
+				]
+			},
+			{
+				name: "Lizard",
+				foreign_keys: [
+					"Doge"
+				],
+				attributes: [
+					"Veiled Chameleon",
+					"Water Monitor",
+					"Satanic Leaf Tailed Gecko"
+				]
+			}
+		]
+
+	testRelationships =
+		[
+			{ from: "Cat", to: "Rabbit", text: "0..N", toText: "1" },
+			{ from: "Cat", to: "Rabbit", text: "2..N", toText: "2" },
+			{ from: "Dog", to: "Cat", text: "1", toText: "2"},
+			{ from: "Rabbit", to: "Dog", text: "1", toText: "1"},
+			{ from: "Lizard", to: "Dog", text: "2..3", toText: "1"}
+		]
 
 	document.getElementById('save-project-button').onclick = function() {
 		addProject();
@@ -16,17 +91,13 @@ window.onload = function() {
 
 	document.getElementById('expand-button').onclick = function() {
 		activeProject.diagram.expandSelectedTable();
+		activeProject.load_list();
 	}
 
 	document.getElementById('download-button').onclick = function() {
 		activeProject.diagram.export();
 	}
 
-	
-	// TODO - the Layout dropdown needs to call activeDiagram.diagram.setLayout() 
-	// for whatever layout is selected from the dropdown. 
-	// See the function comments in schema_diagram.js for how to use the setLayout function
-	// Hunter
 	var l = document.getElementById('layout');
 	l.onchange = function() {
 		console.log("Changed layout to " + l.options[l.selectedIndex].value);
@@ -147,10 +218,6 @@ function deleteRow(rowId, divId, projectId) {
 		}
 	}
 }
-function editRow(cellId) {
-	console.log(document.getElementById("cell_"+cellId).innerHTML);
-}
-
 
 function toggleTable(id) {
 	console.log(id);

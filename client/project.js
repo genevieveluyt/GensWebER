@@ -58,12 +58,17 @@ class Project {
 			a.appendChild(h2);
 		
 			var tog = document.createElement('button');
-			tog.innerHTML = "Hide";
+			tog.setAttribute('table', tables[i].name);
+			tog.innerHTML = "Hide/Show";
 			tog.onclick = function(evt) {
-				var tableName = evt.target.parentNode.children[1].innerHTML;
-				activeProject.diagram.setTableVisibility(tableName, false);
+				var tableName = evt.target.getAttribute('table');
+				if(activeProject.diagram.isTableVisible(tableName)) {
+					activeProject.diagram.setTableVisibility(tableName, false);
+				} else {
+					activeProject.diagram.setTableVisibility(tableName, true);
+					
+				}
 			};
-
 			a.appendChild(tog);
 
 			var div_table = document.createElement('div');
@@ -77,21 +82,38 @@ class Project {
 				var row = table.insertRow(-1);
 
 				var cell1 = row.insertCell(0);
-
-				cell1.innerHTML = tables[i].attributes[n].name;
-			}
+				cell1.setAttribute('tableName', tables[i].name);
+				cell1.setAttribute('attributeName', tables[i].attributes[n].name);
+				cell1.innerHTML = tables[i].attributes[n].name + " (Hide/Show)";
+				cell1.onclick = function(evt) {
+					var tableName = evt.target.getAttribute('tableName');
+					var attributeName = evt.target.getAttribute('attributeName');
+					// visible --> hidden
+					if(activeProject.diagram.isAttributeVisible(tableName, attributeName)) {
+						activeProject.diagram.setAttributeVisibility(tableName, attributeName, false);
+					}
+					// hidden --> vissible
+					else {
+						activeProject.diagram.setAttributeVisibility(tableName, attributeName, true);
+					}
+				};
+			};
 			div_table.appendChild(table);
 		}
 
 		$(function() {
-			$(".expand").on( "click", function() {
-				$(this).next().slideToggle(200);
-				var $expand = $(this).find(">:first-child");
-
-				if($expand.text() == "+") {
-					$expand.text("-");
+			$(".expand").on( "click", function(evt) {
+				if(evt.target.tagName === "BUTTON") {
+					return;
 				} else {
-					$expand.text("+");
+					$(this).next().slideToggle(200);
+					var $expand = $(this).find(">:first-child");
+
+					if($expand.text() == "+") {
+						$expand.text("-");
+					} else {
+						$expand.text("+");
+					}
 				}
 			});
 		});
