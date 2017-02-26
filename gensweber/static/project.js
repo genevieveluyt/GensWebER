@@ -29,7 +29,7 @@ class Project {
 		    project.load_list();
 	        }
 	    }
-	    xmlHttp.open("POST","http://127.0.0.1:5000/dbSchema", true); // true for asynchronous 
+	    xmlHttp.open("POST","/dbSchema", true); // true for asynchronous 
 	    xmlHttp.setRequestHeader("Content-type", "application/json");
 	    xmlHttp.send(JSON.stringify(this.connectionInfo));
 	}
@@ -103,10 +103,10 @@ class Project {
 
 		$(function() {
 			$(".expand").on( "click", function(evt) {
-				//if(evt.target.tagName === "BUTTON") {
-				//	return;
-				//} else {
-					$(".expand").next().slideToggle(200);
+				if(evt.target.tagName === "BUTTON") {
+					return;
+				} else {
+					$(this).next().slideToggle(200);
 					var $expand = $(this).find(">:first-child");
 
 					if($expand.text() == "+") {
@@ -114,7 +114,7 @@ class Project {
 					} else {
 						$expand.text("+");
 					}
-				//}
+				}
 			});
 		});
 	}

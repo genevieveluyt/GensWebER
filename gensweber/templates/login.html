@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %}
+
+  <h2>
+    {% if request.path == url_for('login') %}
+      Login
+    {% else %}
+      Create New Account
+    {% endif %}
+  </h2>
+
+  {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}
+  {% endif %}
+
+  <form action="{{ request.path }}" method=post>
+    <dl>
+      <dt>Username:
+      <dd><input type=text name=username>
+      <dt>Password:
+      <dd><input type=password name=password>
+      {% if request.path == url_for('login') %}
+        <dd><a href="{{ url_for('new_account') }}">Create new account</a>
+        <dd><input type=submit value=Login>
+      {% else %}
+        <dd><input type=submit value="Create Account">
+      {% endif %}
+    </dl>
+  </form>
+{% endblock %}
