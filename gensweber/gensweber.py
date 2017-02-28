@@ -1,8 +1,3 @@
-'''import datetime
-import mysql.connector
-import time
-import re'''
-
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, jsonify
 import os
@@ -10,6 +5,7 @@ import sqlite3
 import mysql.connector
 
 import db_interface
+import schema_algs
 
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , gensweber.py
@@ -56,11 +52,21 @@ def close_db(error):
         g.sqlite_db.close()
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def dashboard():
     if not session.get('logged_in_username'):
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+
+    # If user added a new project or edited the name of an existing one
+    # if request.method == 'POST':
+        # TODO If there is a project ID, update the name of an existing project
+
+        # Otherwise, add the new project to the user's account and get the schemas
+
+    # TODO get projects from user's account
+    projects = None
+
+    return render_template('dashboard.html', projects=projects)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -104,38 +110,41 @@ def logout():
     session.pop('logged_in_username', None)
     return redirect(url_for('login'))
 
+@app.route('/<project_id>', methods=['GET', 'POST'])
+def abstract_diagram(project_id):
+    if not session.get('logged_in_username'):
+        return redirect(url_for('login'))
 
+    if request.method == 'POST':
+        # TODO update name/position/visibility data
+        # no need to reload the page since Go.js updates the UI live
+        return
+
+    # TODO get abstract schema data (including positions and visibility data) from user's account
+    # For each entity, add name by doing queries using the key value (as id)
+    data = None
+
+    return render_template('abstract_diagram.html', data=data)
+
+@app.route('/<project_id>/<entity_id>', methods=['GET', 'POST'])
+def abstract_entity(project_id, entity_id):
+    if not session.get('logged_in_username'):
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # TODO update position/visibility data
+        # no need to reload the page since Go.js updates the UI live
+        return
+
+    # TODO get abstract schema data (including positions and visibility data) from user's account
+    data = None
+
+    return render_template('abstract_entity.html')
+
+# TODO project information will be passed in instead of this being a route
 @app.route("/dbSchema",methods=['GET','POST'])
 def reSchema():
     reDic = request.json
     print(reDic)
-    schema = jsonify(getDBschema(reDic['user'],reDic['name'],reDic['password'],reDic['host']))
+    schema = jsonify(schema_algs.get_db_schema(reDic['user'],reDic['name'],reDic['password'],reDic['host']))
     return(schema)
-
-def getDBschema(u,d,p,h):
-    print([u,d,p,h])
-    cnx = mysql.connector.connect(user=u, database=d, password=p,host=h)
-    allTabsCurs = cnx.cursor()
-    allTabsCurs.execute("show tables")
-    tableNames = allTabsCurs.fetchall()
-    allTabsCurs.execute("select * from information_schema.referential_constraints where constraint_schema = '"+ d +"';")
-    fkNames = allTabsCurs.fetchall()
-    data = {}
-    tables = []
-    relationships = []
-    for table in tableNames:
-        currTab = {}
-        allTabsCurs.execute("describe "+table[0])
-        colInfo = allTabsCurs.fetchall()
-        cols = []
-        for col in colInfo:
-            cols = cols + [col[0]]
-        tables.append({"name":table[0],'attributes':cols})
-    data['tables'] = tables
-	
-    for n in fkNames:
-        relationships.append({'from':n[-2],'to':n[-1]})
-    data['relationships'] = relationships
-
-    cnx.close()
-    return(data)
