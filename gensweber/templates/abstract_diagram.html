@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+	<script type='text/javascript'>
+		var schemaDiagram = {{ abstract_schema | tojson }};
+	</script>
+
+	<div class="container">
+		<h1>{{ project_name }}</h1>
+
+		{% for entity in abstract_schema['entities'] %}
+			<a href="{{ url_for('abstract_entity', project_id=request.path[1:], entity_id=entity['entity_id']) }}">{{ entity['name'] }}</a><br>
+		{% endfor %}
+	</div>
+
+{% endblock %}

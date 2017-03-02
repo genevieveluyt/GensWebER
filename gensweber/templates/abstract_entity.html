@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block body %}
+
+	<!-- Local files -->
+	<script src="{{ url_for('static', filename='schema_diagram.js') }}"></script>
+	<script type="text/javascript">
+		var schema = {{ entity_schema | tojson }};
+		window.onload = function() {
+			schemaDiagram = new SchemaDiagram('schema-diagram', schema.tables, schema.relationships);
+		}
+	</script>
+	
+	<div class="container">
+		<div class="row">
+			<h1>{{ entity_schema['name'] }}</h1>
+		</div>
+	</div>
+		
+	<div class="container">
+		<nav class="navbar">
+			<div class="container-fluid">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id='expand-button'><i class="glyphicon glyphicon-resize-full"></i> Expand</a></li>
+					<li class="dropdown">
+						<select id="layout">
+							<option value="directed">Force Directed</option>
+							<option value="circular">Circular</option>
+							<option value="grid">Grid</option>
+							<option value="digraph">Layered Digraph</option>
+						</select>
+					</li>
+					<li><a href="#" id='download-button'><i class="glyphicon glyphicon-save"></i> Download</a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+	<div class="container">
+		<div id="schema-diagram"></div>
+	</div>
+
+{% endblock %}

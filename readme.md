@@ -18,21 +18,11 @@ To deactivate the virtual environment when you're done working on the project ju
 In the root directory:
 ```$ pip install --editable .```
 
-3. Initialize the database
-```$ flask initdb```
-
-####Optional: Install SQLite
-(If you want to be able to make db queries through the command line like mysql for debugging)
-```$ sudo apt-get install sqlite3```
-
-Activate the database to use it
-```$ sqlite3 gensweber/gensweber.db```
-
-View tables
-```$ .tables```
-
-View table schema (columns)
-```$ .schema TABLENAME```
+3. Install MongoDB
+```
+sudo apt-get install mongodb-server
+sudo apt-get install mongodb-clients
+```
 
 ###Running the application
 Activate the virtual environment if it is not currently active
@@ -47,16 +37,13 @@ $ PYTHONPATH=<path to app root folder> flask run
 
 ##Instructions
 
-1. Make sure Python 2 is installed
+1. Make sure Python 2 and MongoDB are installed
 
 2. Install this Python package
 In the root directory gensweber:
 ```$ pip install .```
 
-3. Initialize the database
-``` flask initdb```
-
-4. Run the application
+3. Run the application
 ```
 $ export FLASK_APP=gensweber
 $ PYTHONPATH=<path to app root folder> flask run

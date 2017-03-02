@@ -93,6 +93,7 @@ class SchemaDiagram {
 		})(layout);
 	}
 
+
 	/**
 	 * Export the diagram to a file
 	 *
@@ -275,7 +276,7 @@ class SchemaDiagram {
 						go.TextBlock,
 						{
 							row: 0,
-							alignment: go.Spot.Center,
+							alignment: go.Spot.Left,
 							margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
 							font: panelHeaderFont
 						},
@@ -363,8 +364,7 @@ class SchemaDiagram {
 	static formatTables(tables) {
 		_.each(tables, function(table) {
 			// Each node must have a key
-			table.key = table.name;
-			table.visible = true;
+			table.key = table.table_id;
 
 			// Convert each attribute (string) into an object with a 'name' property
 			_.each(table, function(value, key) {

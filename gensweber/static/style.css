@@ -6,8 +6,7 @@
     box-sizing: border-box;
 }
 
-#schema_diagrams div
-{
+#schema-diagram {
 	background-color: white;
 	border: solid 1px black;
 	width: 100%;
