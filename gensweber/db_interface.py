@@ -14,10 +14,10 @@ class db_interface:
 		self.db = self.mongo.db
 
 	def user_exists(self, username):
-		user = self.get_user_data(username)
-		if user:
-			print("User tried to make account with username " + username + " but it exists already.")
-		return True if user else False
+            user = self.db.users.find_one({'username': username})
+            if user:
+                print("User tried to make account with username " + username + " but it exists already.")
+            return True if user else False
 
 	def create_user(self, username, password):
 		self.db.users.insert({

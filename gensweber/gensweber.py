@@ -40,7 +40,8 @@ def dashboard():
             host = request.form['host']
             port = request.form['port']
 
-            abstract_schema = schema_algs.get_abstract_schema(db_name, db_user, db_pass, host, port)
+            db_schema = schema_algs.get_db_schema(db_name, db_user, db_pass, host, port)
+            abstract_schema = db_schema['cluster']
             db.create_project(username, project_name, db_name, db_user, db_pass, host, port, abstract_schema)
 
     projects = db.get_projects(username)
