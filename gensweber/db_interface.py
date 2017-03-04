@@ -1,6 +1,6 @@
 from flask import Flask, session
-# from flask.ext.pymongo import PyMongo
 from flask_pymongo import PyMongo
+import json
 
 class db_interface:
 	# table names
@@ -92,7 +92,6 @@ class db_interface:
 		for key, value in projects.iteritems():
 			value.pop('abstract_schema')
 			projects_array.append(value)
-		print('Projects: {}'.format(projects_array))
 		return projects_array
 
 	def get_project_details(self, username, project_id):
@@ -101,21 +100,149 @@ class db_interface:
 		return project
 
 	def get_abstract_schema(self, username, project_id):
-		abstract_schema = self.db.users.find_one({'username': username}, {'projects.{}.abstract_schema'.format(project_id): 1}).get('projects', {}).get(project_id, {}).get('abstract_schema', {})
-		
-		for entity in abstract_schema.get('entities', []):
-			table_names = []
-			for table in entity.get('tables', []):
-				table_names.append(table['name'])
-			entity['tables'] = table_names
+		saved_data = self.db.users.find_one(
+			{
+				'username': username
+			}, 
+			{
+				'projects.{}.saved_data.abstract_schema'.format(project_id): 1
+			}
+		).get('projects', {}).get(project_id, {}).get('saved_data', {}).get('abstract_schema', {})
 
-		return abstract_schema
+		if saved_data:
+			entities = json.loads(saved_data)['nodeDataArray']
+			return saved_data, entities
+
+		abstract_schema = self.db.users.find_one(
+			{
+				'username': username
+			}, 
+			{
+				'projects.{}.abstract_schema'.format(project_id): 1
+			}
+		).get('projects', {}).get(project_id, {}).get('abstract_schema', {})
+		
+		data = dict()
+		data['nodes'] = []
+		data['links'] = abstract_schema.get('relationships', [])
+		for entity in abstract_schema.get('entities', []):
+			tables = []
+			for table in entity.get('tables', {}):
+				tables.append({
+					'name': table['name']
+				})
+
+			node = {
+				'key': entity['entity_id'],
+				'name': entity.get('name'),
+				'visible': True,
+				'expanded': True,
+				'tables': tables
+			}
+			if 'shape' in entity:
+				node['shape'] = entity['shape']
+				
+			data['nodes'].append(node)
+
+		return data, data['nodes']
+
+	def save_abstract_schema(self, username, project_id, data):
+		self.db.users.find_one_and_update(
+			{
+				'username': username
+			},
+			{
+				'$set': {
+					'projects.{}.saved_data.abstract_schema'.format(project_id): data
+				}
+			}
+		)
 
 	def get_abstract_entity(self, username, project_id, entity_id):
-		data = self.db.users.find_one({'username': username}, {'projects.{}.abstract_schema.entities'.format(project_id): {'$slice': [int(entity_id), 1]} })
-		print('Getting entity {} for project {}'.format(entity_id, project_id))
-		entity = data.get('projects', {}).get(project_id, {}).get('abstract_schema', {}).get('entities', [])[0]
-		entity.pop('location')
-		entity.pop('expanded')
-		entity.pop('visible')
-		return entity
+		saved_data = self.get_saved_abstract_entity_data(username, project_id, entity_id)
+		if saved_data:
+			tables = json.loads(saved_data)['nodeDataArray']
+			return saved_data, tables
+
+		entity_setup_data = self.db.users.find_one(
+				{
+					'username': username
+				},
+				{
+					'projects.{}.abstract_schema.entities'.format(project_id): {'$slice': [int(entity_id), 1]}
+				}
+			).get('projects', {}).get(project_id, {}).get('abstract_schema', {}).get('entities', [])[0]
+		
+		data = {
+			'nodes': [],
+			'links': entity_setup_data.get('relationships', [])
+		}
+
+		for table in entity_setup_data.get('tables', []):
+			tableData = {
+				'key': table['table_id'],
+				'name': table['name'],
+				'visible': True,
+				'expanded': True,
+				'primary_keys': [],
+				'foreign_keys': [],
+				'attributes': []
+			}
+
+			for key in ["primary_keys", "foreign_keys", "attributes"]:
+				for value in table.get(key, []):
+					tableData[key].append({
+						'name': value,
+						'visible': True
+					})
+
+			data['nodes'].append(tableData)
+
+		return data, data['nodes']
+
+	def save_abstract_entity(self, username, project_id, entity_id, data):
+		self.db.users.find_one_and_update(
+			{
+				'username': username
+			},
+			{
+				'$set': {
+					'projects.{}.saved_data.entities.{}'.format(project_id, entity_id): data
+				}
+			}
+		)
+
+	def get_saved_abstract_schema_data(self, username, project_id):
+		return self.db.users.find_one(
+			{
+				'username': username
+			}, 
+			{
+				'projects.{}.saved_data.abstract_schema'.format(project_id): 1
+			}
+		).get('projects', {}).get(project_id, {}).get('saved_data', {}).get('abstract_schema', {})
+
+	def get_saved_abstract_entity_data(self, username, project_id, entity_id):
+		return self.db.users.find_one(
+			{
+				'username': username
+			}, 
+			{
+				'projects.{}.saved_data.entities.{}'.format(project_id, entity_id): 1
+			}
+		).get('projects', {}).get(project_id, {}).get('saved_data', {}).get('entities', {}).get(entity_id, {})
+
+	def get_abstract_entity_name(self, username, project_id, entity_id):
+		saved_shema_data = self.get_saved_abstract_schema_data(username, project_id)
+		if (saved_shema_data):
+			return next((item for item in json.loads(saved_shema_data).get('nodeDataArray', []) if item['key'] == int(entity_id)), {}).get('name')
+
+		entity_setup_data = self.db.users.find_one(
+				{
+					'username': username
+				},
+				{
+					'projects.{}.abstract_schema.entities'.format(project_id): {'$slice': [int(entity_id), 1]}
+				}
+			).get('projects', {}).get(project_id, {}).get('abstract_schema', {}).get('entities', [])[0]
+		return entity_setup_data.get('name')

@@ -3,23 +3,45 @@
 
 	<!-- Local files -->
 	<script src="{{ url_for('static', filename='schema_diagram.js') }}"></script>
+	<script src="{{ url_for('static', filename='diagram_helpers.js') }}"></script>
 	<script type="text/javascript">
-		var schema = {{ entity_schema | tojson }};
+		var entityName = {{ entity_name | tojson }}
+		var diagramData = {{ diagram_data | tojson }}
+		var tables = {{ tables | tojson }};
+
 		window.onload = function() {
-			schemaDiagram = new SchemaDiagram('schema-diagram', schema.tables, schema.relationships);
+			initDiagram('schema-diagram', diagramData, editableHeader=true);
+
+			document.getElementById('save-layout-button').onclick = function() {
+				saveDiagram("{{ request.path }}");
+			}
+
+			document.getElementById('expand-button').onclick = function() {
+				expandSelection();
+			}
+
+			document.getElementById('download-full-diagram').onclick = function() {
+				exportFullDiagram("{{ project_name }}" + ".png");
+			}
+
+			document.getElementById('download-visible-diagram').onclick = function() {
+				exportVisibleDiagram("{{ project_name }}" + ".png");
+			}
+
+			var layoutDropdown = document.getElementById('layout');
+			bindLayoutDropdown(layoutDropdown);
 		}
 	</script>
-	
+
 	<div class="container">
-		<div class="row">
-			<h1>{{ entity_schema['name'] }}</h1>
-		</div>
+		<h1>{{ entity_name }}</h1>
 	</div>
 		
 	<div class="container">
 		<nav class="navbar">
 			<div class="container-fluid">
 				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id='save-layout-button'>Save Layout</a></li>
 					<li><a href="#" id='expand-button'><i class="glyphicon glyphicon-resize-full"></i> Expand</a></li>
 					<li class="dropdown">
 						<select id="layout">
@@ -29,11 +51,18 @@
 							<option value="digraph">Layered Digraph</option>
 						</select>
 					</li>
-					<li><a href="#" id='download-button'><i class="glyphicon glyphicon-save"></i> Download</a></li>
+					<li class="dropdown">
+			            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-save"></i> Download<span class="caret"></span></a>
+			            <ul class="dropdown-menu">
+			                <li><a href="#" id='download-full-diagram'>Full Diagram</a></li>
+			                <li><a href="#" id='download-visible-diagram'>Visible Diagram</a></li>
+			            </ul>
+			        </li>
 				</ul>
 			</div>
 		</nav>
 	</div>
+
 	<div class="container">
 		<div id="schema-diagram"></div>
 	</div>

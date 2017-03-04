@@ -6,7 +6,8 @@
 				url: "{{ url_for('dashboard') }}" + project_id,
 				type: 'DELETE',
 				success: function(response) {
-					console.log(response);
+					console.log("Deleted project");
+					window.location.href = "{{ url_for('dashboard') }}"
 				}
 			})
 		}

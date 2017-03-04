@@ -1,15 +1,68 @@
 {% extends "layout.html" %}
 {% block body %}
-	<script type='text/javascript'>
-		var schemaDiagram = {{ abstract_schema | tojson }};
+	<!-- Local files -->
+	<script src="{{ url_for('static', filename='schema_diagram.js') }}"></script>
+	<script src="{{ url_for('static', filename='diagram_helpers.js') }}"></script>
+	<script type="text/javascript">
+		var projectName = {{ project_name | tojson }}
+		var diagramData = {{ diagram_data | tojson }};
+		var entities = {{ entities | tojson }}
+
+		window.onload = function() {
+			initDiagram('schema-diagram', diagramData, editableHeader=true);
+
+			document.getElementById('save-layout-button').onclick = function() {
+				saveDiagram("{{ request.path }}");
+			}
+
+			document.getElementById('drill-in-button').onclick = function() {
+				drillIn("{{ url_for('abstract_diagram', project_id=request.path[1:]) }}")
+			}
+
+			document.getElementById('download-full-diagram').onclick = function() {
+				exportFullDiagram("{{ project_name }}" + ".png");
+			}
+
+			document.getElementById('download-visible-diagram').onclick = function() {
+				exportVisibleDiagram("{{ project_name }}" + ".png");
+			}
+
+			var layoutDropdown = document.getElementById('layout');
+			bindLayoutDropdown(layoutDropdown);
+		}
 	</script>
 
 	<div class="container">
 		<h1>{{ project_name }}</h1>
-
-		{% for entity in abstract_schema['entities'] %}
-			<a href="{{ url_for('abstract_entity', project_id=request.path[1:], entity_id=entity['entity_id']) }}">{{ entity['name'] }}</a><br>
-		{% endfor %}
+	</div>
+		
+	<div class="container">
+		<nav class="navbar">
+			<div class="container-fluid">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id='save-layout-button'>Save Diagram</a></li>
+					<li><a href="#" id='drill-in-button'><i class="glyphicon glyphicon-resize-full"></i> Drill In</a></li>
+					<li class="dropdown">
+						<select id="layout">
+							<option value="directed">Force Directed</option>
+							<option value="circular">Circular</option>
+							<option value="grid">Grid</option>
+							<option value="digraph">Layered Digraph</option>
+						</select>
+					</li>
+					<li class="dropdown">
+			            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-save"></i> Download<span class="caret"></span></a>
+			            <ul class="dropdown-menu">
+			                <li><a href="#" id='download-full-diagram'>Full Diagram</a></li>
+			                <li><a href="#" id='download-visible-diagram'>Visible Diagram</a></li>
+			            </ul>
+			        </li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+	<div class="container">
+		<div id="schema-diagram"></div>
 	</div>
 
 {% endblock %}

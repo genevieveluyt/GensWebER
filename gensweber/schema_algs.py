@@ -1,3 +1,5 @@
+import mysql.connector
+
 def get_abstract_schema(db_name, db_user, db_pass, host, port):
     fake_schema = {
         'entities': [
@@ -28,7 +30,8 @@ def get_abstract_schema(db_name, db_user, db_pass, host, port):
             },
             {
                 'entity_id': 1,
-                'name': "AE2",
+                'name': "AR1",
+                'shape': "Triangle",
                 'tables': [
                     {
                         'table_id': 2,

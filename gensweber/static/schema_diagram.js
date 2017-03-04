@@ -1,78 +1,105 @@
 class SchemaDiagram {
 	/**
 	 * @param {string} divId - The id of the div element where the diagram will be placed into
-	 * @param {array} tables - Array of table objects representing the schema of that table
-	 * @param {array} relationships - Array of link objects representing how tables are related by foreign keys
+	 * @param {string or json} data - Either an object with 'nodes' and 'links' or a stringified JSON produced by SchemaDiagram.getData()
+	 * @param {boolean} editableHeader - Whether or not the user can edit the headers of nodes in the diagram
 	 * @param {string} layout - The automatic layout of the tables in the diagram. One of "circular", "grid", "digraph" or "directed"
 	 */
-	constructor(divId, tables, relationships, layout="directed") {
-		this.initDiagram(divId, tables, relationships, layout);
+	constructor(divId, data, editableHeader=false, layout="directed") {
+		if (typeof data == 'string') {
+			var fromSavedData = true;
+			console.log('Loading diagram from saved data');
+		}
+
+		this.diagram = this.initDiagram(divId, editableHeader);
+
+		if (fromSavedData) {
+			this.diagram.model = go.Model.fromJson(data);
+		} else {
+			this.diagram.model = new go.GraphLinksModel(data.nodes, data.links);
+			this.setLayout(layout);
+		}
 	}
 
 	/**
-	 * Check if a table is visible
+	 * Check if a node is visible
 	 */
-	isTableVisible(tableName) {
+	isNodeVisible(nodeKey) {
 		var model = this.diagram.model;
-		return model.findNodeDataForKey(tableName).visible;
+		return model.findNodeDataForKey(nodeKey).visible;
 	}
 
 	/**
-	 * Check if an attribute is visible
+	 * Check if a row in a node is visible
 	 */
-	isAttributeVisible(tableName, attributeName) {
+	isNodeRowVisible(nodeKey, rowName) {
 		var model = this.diagram.model;
-		var tableData = model.findNodeDataForKey(tableName);
-		var attributeData = _.findWhere(_.union(tableData.primary_keys, tableData.foreign_keys, tableData.attributes), {name: attributeName});
-		return attributeData.visible;
+		var nodeData = model.findNodeDataForKey(nodeKey);
+		var rowData = _.findWhere(_.union(nodeData.primary_keys, nodeData.foreign_keys, nodeData.attributes, nodeData.tables), {name: rowName});
+		return rowData.visible;
 	}
 
 	/**
-	 * Show or hide a table
+	 * Show or hide a node
 	 *
-	 * @param {string} tableName - The name of the table to show or hide
-	 * @param {boolean} visibility - True shows the table, false hides it and its associated links
+	 * @param {string} nodeKey - The key of the node to show or hide
+	 * @param {boolean} visibility - True shows the node, false hides it and its associated links
 	 */
-	setTableVisibility(tableName, visibility) {
+	setNodeVisibility(nodeKey, visibility) {
 		var model = this.diagram.model;
-		model.setDataProperty(model.findNodeDataForKey(tableName), "visible", visibility);
+		model.setDataProperty(model.findNodeDataForKey(nodeKey), "visible", visibility);
 	}
 
 	/**
-	 * Show or hide a table attribute
+	 * Show or hide a row in a node
 	 *
-	 * @param {string} tableName - The name of the table containing the attribute to show or hide
-	 * @param {string} attributeName - The name of the attribute to show or hide
-	 * @param {boolean} visibility - True shows the attribute, false hides it
+	 * @param {string} nodeKey - The key of the node containing the row to show or hide
+	 * @param {string} rowName - The name of the row to show or hide
+	 * @param {boolean} visibility - True shows the row, false hides it
 	 */
-	setAttributeVisibility(tableName, attributeName, visibility) {
+	setRowVisibility(nodeKey, rowName, visibility) {
 		var model = this.diagram.model;
-		var tableData = model.findNodeDataForKey(tableName);
-		var attributeData = _.findWhere(_.union(tableData.primary_keys, tableData.foreign_keys, tableData.attributes), {name: attributeName});
-		model.setDataProperty(attributeData, "visible", visibility)
+		var nodeData = model.findNodeDataForKey(nodeKey);
+		var rowData = _.findWhere(_.union(nodeData.primary_keys, nodeData.foreign_keys, nodeData.attributes, nodeData.tables), {name: rowName});
+		model.setDataProperty(rowData, "visible", visibility)
+	}
+
+	getSelectedNodeKey() {
+		var diagram = this.diagram;
+
+		var selectedNode = diagram.selection.iterator;
+		while(selectedNode.next()) {
+			if (selectedNode.value) {
+				return selectedNode.value.data.key;
+			}
+		}
+
+		// no node selected
+		return null;
+		
 	}
 
 	/**
-	 * Show all tables that are linked to currently selected table
+	 * Show all nodes that are linked to currently selected node
 	 */
-	expandSelectedTable() {
+	showNeighboursOfSelectedNode() {
 		var diagram = this.diagram;
 		var model = diagram.model;
 
-		var selectedTables = diagram.selection.iterator;
-		while(selectedTables.next()) {
-			var connectedTables = selectedTables.value.findNodesConnected();
-			while(connectedTables.next()) {
-				var connectedTable = connectedTables.value.data;
-				if (!connectedTable.visible) {
-					model.setDataProperty(connectedTable, "visible", true);
+		var selectedNodes = diagram.selection.iterator;
+		while(selectedNodes.next()) {
+			var connectedNodes = selectedNodes.value.findNodesConnected();
+			while(connectedNodes.next()) {
+				var connectedNode = connectedNodes.value.data;
+				if (!connectedNode.visible) {
+					model.setDataProperty(connectedNode, "visible", true);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Set the automatic layout of tables in the diagram
+	 * Set the automatic layout of nodes in the diagram
 	 *
 	 * @param {string} layout - One of "circular", "grid", "digraph" or "directed"
 	 */
@@ -95,24 +122,39 @@ class SchemaDiagram {
 
 
 	/**
-	 * Export the diagram to a file
+	 * Export the full diagram to a file
 	 *
-	 * @param {string} filename - The file name that will be used when the user tries to export the diagram
+	 * @param {string} filename - The file name that will be used for the file.
 	 */
-	export(filename="diagram.png") {
+	exportFullDiagram(filename="diagram.png") {
+		exportdiagram({ scale: 1 })
+	}
+
+	/**
+	 * Export the diagram to a file. If no options are passed in, only the part of the diagram visible on the canvas will be exported.
+	 *
+	 * @param {string} filename - The file name that will be used for the file.
+	 * @param {options} - See Go.js documentation for options that can be passed to Diagram.makeImageData()
+	 */
+	exportDiagram(filename="diagram.png", options={}) {
 		// make a temporary element to force download
 		var a = document.createElement('a');
-		a.href = this.diagram.makeImageData();
+		a.href = this.diagram.makeImageData(options);
 		a.download = filename;
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
 	}
 
+	
+	getData() {
+		return this.diagram.model.toJson();
+	}
+
 	/**
-	 * Build the actual diagram and display it in the div element with the given id
+	 * Build the actual diagram
 	 */
-	initDiagram(divId, tables, relationships, layout) {
+	initDiagram(divId, editableHeader=false) {
 		var $ = go.GraphObject.make;
 
 		// Diagram Formatting
@@ -128,7 +170,6 @@ class SchemaDiagram {
 		var linkColour = "#303B45";
 		var linkTextFont = "bold 14px sans-serif";
 		var linkTextColour = "#1967B3"
-
 
 
 		// Helper function
@@ -155,11 +196,10 @@ class SchemaDiagram {
 					var figure = 'BpmnEventEscalation';
 					var figureColour = 'blue';
 					break;
-				case "attribute":
 				default:
 					var row = 2;
 					var padding = new go.Margin(0, 3, 3, 3);
-					var textBinding = "attributes";
+					var textBinding = type;
 					var figure = null;
 			}
 
@@ -222,8 +262,6 @@ class SchemaDiagram {
 
 		// CODE
 
-		tables = SchemaDiagram.formatTables(tables);
-
 		var myDiagram = $(
 			go.Diagram,
 			divId,
@@ -254,8 +292,9 @@ class SchemaDiagram {
 				// define the node's outer shape, which will surround the Table
 				$(
 					go.Shape,
-					"Rectangle",
-					panelFormatting
+					"RoundedRectangle",
+					panelFormatting,
+					new go.Binding("figure", "shape")
 				),
 				$(
 					go.Panel,
@@ -278,9 +317,10 @@ class SchemaDiagram {
 							row: 0,
 							alignment: go.Spot.Left,
 							margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
-							font: panelHeaderFont
+							font: panelHeaderFont,
+							editable: editableHeader
 						},
-						new go.Binding("text", "name")	// table name
+						new go.Binding("text", "name").makeTwoWay()
 					),
 					// the collapse/expand button
 					$(
@@ -301,7 +341,9 @@ class SchemaDiagram {
 						},
 						generatePanel('primary'),
 						generatePanel('foreign'),
-						generatePanel('attributes')
+						generatePanel('attributes'),
+						generatePanel('tables'),
+						new go.Binding('visible', 'expanded').makeTwoWay()
 					)
 				)  // end Table Panel
 			);  // end Node
@@ -351,35 +393,6 @@ class SchemaDiagram {
 				)
 			);
 
-		myDiagram.model = new go.GraphLinksModel(tables, relationships);
-
-		// save a reference to the diagram
-		this.diagram = myDiagram;
-
-		// set the layout of the diagram
-		this.setLayout(layout);
+		return myDiagram;
 	}
-
-	// Transform the schema into the structure required for the diagram
-	static formatTables(tables) {
-		_.each(tables, function(table) {
-			// Each node must have a key
-			table.key = table.table_id;
-
-			// Convert each attribute (string) into an object with a 'name' property
-			_.each(table, function(value, key) {
-				if (_.isArray(value)) {
-					table[key] = _.map(value, function(attribute) {
-						return { 
-							name: attribute,
-							visible: true
-						};
-					});
-				};
-			});
-		})
-
-		return tables;
-	}
-	
 }
