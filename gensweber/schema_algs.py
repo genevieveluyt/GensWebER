@@ -76,7 +76,11 @@ def get_abstract_schema(db_name, db_user, db_pass, host, port):
 
 def get_db_schema(d,u,p,h,o):
     print([u,d,p,h,o])
-    cnx = mysql.connector.connect(user=u, database=d, password=p,host=h,port = o)
+    try:
+        cnx = mysql.connector.connect(user=u, database=d, password=p,host=h,port = o)
+    except:
+        print("Unable to connect to database")
+        return None
     allTabsCurs = cnx.cursor()
     allTabsCurs.execute("show tables")
     tableNames = allTabsCurs.fetchall()
@@ -96,7 +100,6 @@ def get_db_schema(d,u,p,h,o):
             if col[3]=='PRI':
                 pris.append(col[0])
         tables.append({"name":table[0],'attributes':cols,'pks':sorted(pris)})
-    tables.append({"name":'rowan_join','attributes':cols,'pks':['id','string_id']})
     data['tables'] = tables
 	
     for n in fkNames:
