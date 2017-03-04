@@ -41,12 +41,13 @@ def dashboard():
             port = request.form['port']
 
             db_schema = schema_algs.get_db_schema(db_name, db_user, db_pass, host, port)
-            abstract_schema = db_schema['cluster']
-            db.create_project(username, project_name, db_name, db_user, db_pass, host, port, abstract_schema)
-
-    projects = db.get_projects(username)
-
-    return render_template('dashboard.html', projects=projects)
+            if db_schema is not None:
+                abstract_schema = db_schema.get('cluster')
+                db.create_project(username, project_name, db_name, db_user, db_pass, host, port, abstract_schema)
+                projects = db.get_projects(username)
+                return render_template('dashboard.html', projects=projects)
+            else:
+                return render_template('dashboard.html',error=error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
