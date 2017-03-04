@@ -4,9 +4,9 @@
 	<script src="{{ url_for('static', filename='schema_diagram.js') }}"></script>
 	<script src="{{ url_for('static', filename='diagram_helpers.js') }}"></script>
 	<script type="text/javascript">
-		var projectName = {{ project_name | tojson }}
+		var projectName = {{ project_name | tojson }};
 		var diagramData = {{ diagram_data | tojson }};
-		var entities = {{ entities | tojson }}
+		var entities = {{ entities | tojson }};
 
 		window.onload = function() {
 			initDiagram('schema-diagram', diagramData, editableHeader=true);

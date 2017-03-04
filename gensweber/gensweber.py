@@ -27,6 +27,8 @@ def dashboard():
     if not username:
         return redirect(url_for('login'))
 
+    error = None
+
     # If user added a new project or edited the name of an existing one
     if request.method == 'POST':
         old_name = request.form.get('old_name', None)
@@ -41,13 +43,15 @@ def dashboard():
             port = request.form['port']
 
             db_schema = schema_algs.get_db_schema(db_name, db_user, db_pass, host, port)
-            if db_schema is not None:
+            if db_schema:
                 abstract_schema = db_schema.get('cluster')
                 db.create_project(username, project_name, db_name, db_user, db_pass, host, port, abstract_schema)
-                projects = db.get_projects(username)
-                return render_template('dashboard.html', projects=projects)
             else:
-                return render_template('dashboard.html',error=error)
+                error = 'Unable to connect to {}. Please check your connection details.'.format(db_name)
+        
+    projects = db.get_projects(username)
+
+    return render_template('dashboard.html', projects=projects, error=error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

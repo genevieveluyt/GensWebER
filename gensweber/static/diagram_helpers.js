@@ -48,3 +48,11 @@ function bindLayoutDropdown(dropdownElement) {
 		schemaDiagram.setLayout(layout);
 	}
 }
+
+function setNodeVisibility(nodeKey, visible) {
+	schemaDiagram.setNodeVisibility(nodeKey, visible);
+}
+
+function setRowVisibility(nodeKey, rowName, visible) {
+	schemaDiagram.setRowVisibility(nodeKey, rowName, visible);
+}

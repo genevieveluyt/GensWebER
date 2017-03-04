@@ -16,6 +16,9 @@
 	<div class="container">
 		<div class="row">
 			<h1>Project Dashboard</h1>
+			{% if error %}
+				Error: {{ error }}
+			{% endif %}
 			<table class="table">
 				<tbody id="projects-table">
 					{% for project in projects %}
