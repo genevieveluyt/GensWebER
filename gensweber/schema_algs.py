@@ -101,6 +101,7 @@ def get_db_schema(d,u,p,h,o):
                 pris.append(col[0])
         tables.append({"name":table[0],'attributes':cols,'pks':sorted(pris)})
     data['tables'] = tables
+    #tables = TTables()
 	
     for n in fkNames:
         relationships.append({'from':n[-2],'to':n[-1]})
@@ -110,6 +111,54 @@ def get_db_schema(d,u,p,h,o):
 
     cnx.close()
     return(data)
+
+def TTables():
+    tab = [
+            {'name':'R1',
+            'pks':['Ka','K1'],
+            'attributes':[]},
+
+            {'name':'R2',
+            'pks':['Ka','K2'],
+            'attributes':[]},
+
+            {'name':'R3',
+            'pks':['Ka','K3'],
+            'attributes':[]},
+
+            {'name':'R4',
+            'pks':['Kc','Kx','K4'],
+            'attributes':[]},
+
+            {'name':'R5',
+            'pks':['Kc','Kx','Kd','K5'],
+            'attributes':[]},
+
+            {'name':'R6',
+            'pks':['Ka','Kb','K6'],
+            'attributes':[]},
+
+            {'name':'R7',
+            'pks':['Ka','Kc','Kx','Ke','K7'],
+            'attributes':[]},
+            
+            {'name':'R8',
+            'pks':['Ka','Ka','K8'],
+            'attributes':[]},
+
+            {'name':'R9',
+            'pks':['Ka','Kb','Kc','Kx','Kd','K9'],
+            'attributes':[]},
+
+            {'name':'R10',
+            'pks':['Kc','Ky','K10'],
+            'attributes':[]},
+
+            {'name':'R11',
+            'pks':['Ka','Kc','K11'],
+            'attributes':[]}
+            ]
+    return tab
 
 def get_abstract_schema(clusters,tables,relationships):
     cluster = clusters['cluster']
@@ -154,16 +203,6 @@ def get_abstract_schema(clusters,tables,relationships):
                     curr_to = t['table_id']
             if curr_from and curr_to:
                 e['relationships'].append({'from':curr_from,'to':curr_to})
-            
-
-
-
-
-
-
-
-
-
     return(abstract_schema)
         
 
@@ -176,6 +215,9 @@ def ClusterTables(tables):
     clusters.append({'t':[tables[0]['name']],'pks':[key for key in tables[0]['pks']]})
     remTabs.remove(tables[0])
     nes = 0
+
+
+
     for i in range(1,len(tables)):
         R = tables[i]
         if R['pks'] == clusters[nes]['pks']:
@@ -208,7 +250,8 @@ def ClusterTables(tables):
                     break
 
     intersects = [0 for i in range(nes+1)]
-    argument = (nes**2)*[intersects]
+    argument = []
+
     nas = nes+1
     first_rel = True
     for R in copy.deepcopy(remTabs):
@@ -218,8 +261,7 @@ def ClusterTables(tables):
             else:
                 intersects[i] = 0
         if first_rel:
-            for i in range(nes+1):
-                argument[0][i] = intersects[i]
+            argument.append([n for n in intersects])
             clusters.append({'t':[R['name']],'pks':[key for key in R['pks']]})
             remTabs.remove(R)
             first_rel = False
@@ -227,17 +269,17 @@ def ClusterTables(tables):
             found = False
             for j in range(nas+1):
                 if argument[j] == intersects:
-                    clusters[j]['t'].append(R['name'])
+                    target = j+nes+1
+                    clusters[target]['t'].append(R['name'])
                     for pk in R['pks']:
-                        if pk not in clusters[j]['pks']:
-                            clusters[j]['pks'].append(pk)
+                        if pk not in clusters[target]['pks']:
+                            clusters[target]['pks'].append(pk)
                     remTabs.remove(R);
                     found = True
                     break;
             if not found:
                 nas+=1
-                for i in range(nes+1):
-                    arguement[nas-nes][i] = intersects[i]
+                argument.append([n for n in intersects])
                 clusters.append({'t':[R['name']],'pks':[key for key in R['pks']]})
                 remTabs.remove(R)
     return {'cluster':clusters,'nes':nes,'nas':nas}
