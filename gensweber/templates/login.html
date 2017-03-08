@@ -1,30 +1,48 @@
 {% extends "layout.html" %}
 {% block body %}
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='login.css') }}">
 
-  <h2>
-    {% if request.path == url_for('login') %}
-      Login
-    {% else %}
-      Create New Account
-    {% endif %}
-  </h2>
-
-  {% if error %}
-    <p class=error><strong>Error:</strong> {{ error }}
-  {% endif %}
-
-  <form action="{{ request.path }}" method=post>
-    <dl>
-      <dt>Username:
-      <dd><input type=text name=username>
-      <dt>Password:
-      <dd><input type=password name=password>
-      {% if request.path == url_for('login') %}
-        <dd><a href="{{ url_for('new_account') }}">Create new account</a>
-        <dd><input type=submit value=Login>
-      {% else %}
-        <dd><input type=submit value="Create Account">
-      {% endif %}
-    </dl>
-  </form>
+<div class="top-content">    	
+	<div class="inner-bg">
+	<div class="container">
+	    <div class="row">
+		<div class="col-sm-6 col-sm-offset-3">
+		    <h1>Welcome to Gen's Web-ER</h1>
+		</div>
+		<div class="col-sm-6 col-sm-offset-3 form-box">
+			<div class="form-top">
+				<div class="form-top-left">
+					{% if request.path == url_for('login') %}
+						<h3>Login to our site</h3>
+		    				<p>Enter your username and password to log on:</p>
+					{% else %}
+						<h3>Register to our site</h3>
+						<p>Enter your username and password to get started:</p>
+					{% endif %}
+				</div>
+				<div class="form-top-right">
+					<i class="fa fa-key"></i>
+				</div>
+			</div>
+	{% if error %}
+		<p class=error><strong>Error:</strong> {{ error }}
+	{% endif %}
+	<div class="form-bottom">
+		<form action="{{ request.path }}" method=post class="login-form">
+			<div class="form-group">
+				<label class="sr-only" for="form-username">Username</label>
+				<input type="text" name="username" placeholder="Username..." class="form-username form-control" id="form-username">
+			</div>
+			<div class="form-group">
+				<label class="sr-only" for="form-password">Password</label>
+				<input type="password" name="password" placeholder="Password..." class="form-password form-control" id="form-password">
+			</div>
+			{% if request.path == url_for('login') %}
+				<a href="{{ url_for('new_account') }}">Create new account</a>
+				<button type="submit" class="btn">Sign in!</button>
+			{% else %}
+				<button type="submit" class="btn">Create Account!</button>
+			{% endif %}
+		</form>
+	</div>
 {% endblock %}

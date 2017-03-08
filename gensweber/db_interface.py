@@ -129,7 +129,8 @@ class db_interface:
 			tables = []
 			for table in entity.get('tables', {}):
 				tables.append({
-					'name': table['name']
+					'name': table['name'],
+					'visible': True
 				})
 
 			node = {

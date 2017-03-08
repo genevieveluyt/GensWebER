@@ -1,6 +1,19 @@
 {% extends "layout.html" %}
 {% block body %}
 	<script type="text/javascript">
+		window.onload = function() {
+			var dialog = document.querySelector('dialog');
+			var showDialogButton = document.querySelector('#show-dialog');
+			if (! dialog.showModal) {
+				dialogPolyfill.registerDialog(dialog);
+			}
+			showDialogButton.addEventListener('click', function() {
+				dialog.showModal();
+			});
+			dialog.querySelector('.close').addEventListener('click', function() {
+				dialog.close();
+			});		
+		};
 		function deleteProject(project_id) {
 			$.ajax({
 				url: "{{ url_for('dashboard') }}" + project_id,
@@ -12,13 +25,111 @@
 			})
 		}
 	</script>
-
 	<div class="container">
 		<div class="row">
-			<h1>Project Dashboard</h1>
+		    <div class="col-sm-6 col-sm-offset-3">
+			<h1>Projects</h1>
+		    </div>
+		    <div class="col-sm-3">
+			<button id="show-dialog" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="margin: 30px 0;">
+			    <i class="material-icons">add</i>
+			</button>
+		    </div>
+		    <dialog class="mdl-dialog" id="add-project">
+			<h4 class="mdl-dialog__title">Add Database</h4>
+			<div class="mdl-dialog__content">
+				<form action='{{ request.path }}' method=post>
+				    	<div class="form-group">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						    <input class="mdl-textfield__input" type="text" name="project_name">
+						    <label class="mdl-textfield__label" for="project_name">Project Name</label>
+						</div>
+					</div>
+				    	<div class="form-group">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						    <input class="mdl-textfield__input" type="text" name="db_name">
+						    <label class="mdl-textfield__label" for="db_name">Database Name</label>
+						</div>
+					</div>
+				    	<div class="form-group">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					    		<input class="mdl-textfield__input" type="text" name="username">
+					    		<label class="mdl-textfield__label" for="username">User</label>
+						</div>
+					</div>
+				    	<div class="form-group">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						    <input class="mdl-textfield__input" type="password" name="password">
+						    <label class="mdl-textfield__label" for="password">Password</label>
+						</div>
+					</div>
+				    	<div class="form-group">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						    <input class="mdl-textfield__input" type="text" name="host">
+						    <label class="mdl-textfield__label" for="host">Host</label>
+						</div>
+					</div>
+				    	<div class="form-group">
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" name="port">
+						    <label class="mdl-textfield__label" for="port">Port</label>
+						    <span class="mdl-textfield__error">Input is not a number!</span>
+						</div>
+					</div>
+					<div class="mdl-dialog__actions">
+			    			<button type="submit" class="mdl-button" name="save-project-button">Agree</button>
+			    			<button type="button" class="mdl-button close">Disagree</button>
+					</div>
+			    	</form>
+			</div>
+		    </dialog>
+		</div>
+		<div class="row">
 			{% if error %}
 				Error: {{ error }}
 			{% endif %}
+			<div class="col-sm-6 col-sm-offset-3">
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+					<thead>
+						<tr>
+							<th class="mdl-data-table__cell--non-numeric">Project Name</th>
+							<th class="mdl-data-table__cell--non-numeric">Database Name</th>
+							<th class="mdl-data-table__cell--non-numeric">Host</th>
+							<th class="mdl-data-table__cell--non-numeric">Port</th>
+							<th class="mdl-data-table__cell--non-numeric"></th>
+						</tr>
+					</thead>
+					<tbody id="projects-table">
+						{% for project in projects %}
+							<tr>
+								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
+									<a href="{{ url_for('abstract_diagram', project_id=project['project_id']) }}">{{ project['name'] }}</a> {{ project['project_name'] }}
+								</td>
+								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
+									{{ project['db_name'] }}
+								</td>
+								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
+									{{ project['host'] }}
+								</td>
+								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
+									{{ project['port'] }}
+								</td>
+								<td>
+									<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="deleteProject({{ project['project_id'] }})">
+										<i class="material-icons">delete</i>
+									</button>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+		    	</div>
+		</div>
+        </div>
+
+	<!--<div class="container">
+		<div class="row">
+			<h1>Project Dashboard</h1>
 			<table class="table">
 				<tbody id="projects-table">
 					{% for project in projects %}
@@ -38,10 +149,10 @@
 		<div class="add-db">
 			<button type="button" class="btn btn-success btn-circle btn-xl" data-toggle="modal" data-target="#add-project-modal"><i class="glyphicon glyphicon-plus"></i></button>
 		</div>
-	</div>
+	</div>-->
 			
 	
-    <!-- Modal -->
+    
     <div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     	<div class="modal-dialog" role="document">
         	<div class="modal-content">
@@ -105,34 +216,6 @@
       	</div>
     </div>
 
-    <!-- Modal Edit -->
-    <div class="modal fade" id="edit-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-    	<div class="modal-dialog" role="document">
-        	<div class="modal-content">
-          		<div class="modal-header">
-            		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            		<h4 class="modal-title" id="myModalLabel">Change Project Name</h4>
-          		</div>
-          		<div class="modal-body">
-		    		<form id='add-project-form'>
-		    			<div class="row">
-		    				<div class="col-xs-10 col-xs-offset-1">
-							<div class="form-group">
-								<label for="project_name">Project Name</label>
-								<input type="text" class="form-control" name="project_name" placeholder="">
-								<input type="text" class="form-control" name="project_name" id="project-id" placeholder="" style="display:none;">
-							</div>
-						</div>
-					</div>
-				</form>
-          		</div>
-	          	<div class="modal-footer">
-	            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	            	<button type="button" id="edit-project-button" class="btn btn-primary">Save changes</button>
-	          	</div>
-        	</div>
-      	</div>
-    </div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 

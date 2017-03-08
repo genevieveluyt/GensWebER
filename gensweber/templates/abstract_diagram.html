@@ -7,6 +7,7 @@
 		var projectName = {{ project_name | tojson }};
 		var diagramData = {{ diagram_data | tojson }};
 		var entities = {{ entities | tojson }};
+		
 
 		window.onload = function() {
 			initDiagram('schema-diagram', diagramData, editableHeader=true);
@@ -30,6 +31,46 @@
 			var layoutDropdown = document.getElementById('layout');
 			bindLayoutDropdown(layoutDropdown);
 		}
+		$(function() {
+			$(".expand").on( "click", function(evt) {
+				if(evt.target.tagName === "BUTTON") {
+					return;
+				} else {
+					$(this).next().slideToggle(200);
+					var $expand = $(this).find(">:first-child");
+
+					if($expand.text() == "+") {
+						$expand.text("-");
+					} else {
+						$expand.text("+");
+					}
+				}
+			});
+		});
+		function visibility(button, key) {
+			if(button.childNodes[1].innerHTML == 'visibility') {
+				setNodeVisibility(key, false);
+				button.childNodes[1].innerHTML = 'visibility_off';
+				console.log(button);
+			}
+			else {
+				setNodeVisibility(key, true);
+				button.childNodes[1].innerHTML = 'visibility';
+				console.log("VISIBLE");
+			}
+		}
+		function attributeVisibility(button, name, key) {
+			if(button.childNodes[1].innerHTML == 'visibility') {
+				setRowVisibility(key, name, false);
+				button.childNodes[1].innerHTML = 'visibility_off';
+				console.log(button);
+			}
+			else {
+				setRowVisibility(key, name, true);
+				button.childNodes[1].innerHTML = 'visibility';
+				console.log("VISIBLE");
+			}			
+		}
 	</script>
 
 	<div class="container">
@@ -39,6 +80,9 @@
 	<div class="container">
 		<nav class="navbar">
 			<div class="container-fluid">
+				<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="float: left;" onclick="">
+  					<i class="material-icons">keyboard_backspace</i>
+				</button>
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="#" id='save-layout-button'>Save Diagram</a></li>
 					<li><a href="#" id='drill-in-button'><i class="glyphicon glyphicon-resize-full"></i> Drill In</a></li>
@@ -61,8 +105,89 @@
 			</div>
 		</nav>
 	</div>
-	<div class="container">
-		<div id="schema-diagram"></div>
+	<div class="row" style="display: inline;">
+		<div class="col-md-3" style="padding: 0;">
+			<div style="height:700px; overflow: scroll; border: 1px solid black;">
+				<div id="integration-list" style="width: 100%;">
+					<ul>
+						{% for entity in entities %}
+							<li>
+								<div class="row">
+									<div class="col-md-10">
+
+									</div>
+									<div class="col-md-2">
+									</div>
+								</div>
+								<table>
+									<tr>
+										<td>
+											{% if entity['visible'] == true %}
+												<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
+													<i class="material-icons">visibility</i>
+												</button>
+											{% else %}
+												<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
+													<i class="material-icons">visibility_off</i>
+												</button>
+											{% endif %}
+										</td>
+										<td>
+											<div>
+												<h2>
+													{{ entity['name'] }}
+												</h2>
+											</div>
+										</td>
+									</tr>
+								</table>
+								<a class="expand">
+									<div class="right-arrow">+</div>
+								</a>
+
+								<div class="detail">
+									<div id="right">
+										<div id="sup">
+							    				<div>
+												<span>
+													<table>
+														{% for table in entity['tables'] %}
+															<tr>
+																<td>
+																	{% if table['visible'] == true %}
+																		<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="attributeVisibility(this, '{{ table['name'] }}', {{ entity['key'] }})">
+																			<i class="material-icons">visibility</i>
+																		</button>
+																	{% else %}
+																		<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="attributeVisibility(this, '{{ table['name'] }}', {{ entity['key'] }})">
+																			<i class="material-icons">visibility_off</i>
+																		</button>
+																	{% endif %}
+																	
+																</td>
+																<td>{{ table['name'] }}</td>
+															</tr>
+														{% endfor %}
+													</table>
+												</span>
+												<br>
+							    				</div>
+										</div>
+									</div>
+								</div>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-8" style="padding: 0;">
+			<div class="container">
+				<div id="schema-diagram"></div>
+			</div>
+		</div>
+		<div class="col-md-1">
+		</div>
 	</div>
 
 {% endblock %}

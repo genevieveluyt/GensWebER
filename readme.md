@@ -5,7 +5,7 @@
 ###Setup
 
 1. Create a virtual environment. We don't want to mess up the Python installation used by the operating system.
-```pip install virtualenv```
+```sudo pip install virtualenv```
 In the root directory of gensweber:
 ```virtualenv venv```
 This creates a folder called venv which contains a separate Python installation (like how Node uses node_modules).
@@ -48,3 +48,6 @@ In the root directory gensweber:
 $ export FLASK_APP=gensweber
 $ PYTHONPATH=<path to app root folder> flask run
 ```
+
+4. Open the browser application
+Navigate to http://127.0.0.1:5000/ in either Firefox (V45 or higher) or Google Chrome (V49.0 or higher).
