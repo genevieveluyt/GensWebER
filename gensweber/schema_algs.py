@@ -119,43 +119,15 @@ def TTables():
             'attributes':[]},
 
             {'name':'R2',
-            'pks':['Ka','K2'],
+            'pks':['Kb','K2'],
             'attributes':[]},
 
             {'name':'R3',
-            'pks':['Ka','K3'],
+            'pks':['Kc','K3'],
             'attributes':[]},
 
             {'name':'R4',
-            'pks':['Kc','Kx','K4'],
-            'attributes':[]},
-
-            {'name':'R5',
-            'pks':['Kc','Kx','Kd','K5'],
-            'attributes':[]},
-
-            {'name':'R6',
-            'pks':['Ka','Kb','K6'],
-            'attributes':[]},
-
-            {'name':'R7',
-            'pks':['Ka','Kc','Kx','Ke','K7'],
-            'attributes':[]},
-            
-            {'name':'R8',
-            'pks':['Ka','Ka','K8'],
-            'attributes':[]},
-
-            {'name':'R9',
-            'pks':['Ka','Kb','Kc','Kx','Kd','K9'],
-            'attributes':[]},
-
-            {'name':'R10',
-            'pks':['Kc','Ky','K10'],
-            'attributes':[]},
-
-            {'name':'R11',
-            'pks':['Ka','Kc','K11'],
+            'pks':['Ka','Kb','Kc','K4'],
             'attributes':[]}
             ]
     return tab
