@@ -96,7 +96,8 @@ class db_interface:
 
 	def get_project_details(self, username, project_id):
 		project = self.db.users.find_one({'username': username}, {'projects.{}'.format(project_id): 1}).get('projects', {}).get(project_id, {})
-		project.pop('abstract_schema'.decode('unicode-escape'))
+		project.pop('abstract_schema'.decode('unicode-escape'),None)
+                project.pop('abstract_schema', None)
 		return project
 
 	def get_abstract_schema(self, username, project_id):

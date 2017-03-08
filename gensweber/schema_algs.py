@@ -100,8 +100,8 @@ def get_db_schema(d,u,p,h,o):
             if col[3]=='PRI':
                 pris.append(col[0])
         tables.append({"name":table[0],'attributes':cols,'pks':sorted(pris)})
-    data['tables'] = tables
-    #tables = TTables()
+    #data['tables'] = tables
+    tables = TTables()
 	
     for n in fkNames:
         relationships.append({'from':n[-2],'to':n[-1]})
@@ -161,9 +161,11 @@ def TTables():
     return tab
 
 def get_abstract_schema(clusters,tables,relationships):
+    print(clusters)
     cluster = clusters['cluster']
     nes = clusters['nes']
     nas = clusters['nas']
+    argument = clusters['arg']
     abstract_schema = {'entities':[], 'relationships':[]}
     entities = []
     table_id = 0
@@ -171,13 +173,16 @@ def get_abstract_schema(clusters,tables,relationships):
     for i in range(min(nas+1,len(cluster))):
         if i>nes:
             entity = {'entity_id':entity_id,'name':'AR'+str(entity_id-(nes+1)),'shape':'Triangle','tables':[],'relationships':[]}
-            for pk in cluster[i]['pks']:
-                for e in entities:
-                    for t in e['tables']:
-                        if pk in t['primary_keys']:
-                            con_to = e['entity_id']
-                            break
-                abstract_schema['relationships'].append({'from':entity_id,'to':con_to})
+            for inter in range(len(argument[i-(nes+1)])):
+                if argument[i-(nes+1)][inter]:
+                    abstract_schema['relationships'].append({'from':entity_id,'to':inter})
+            #for pk in cluster[i]['pks']:
+                #for e in entities:
+                    #for t in e['tables']:
+                        #if pk in t['primary_keys']:
+                            #con_to = e['entity_id']
+                            #break
+            #abstract_schema['relationships'].append({'from':entity_id,'to':con_to})
         else:
             entity = {'entity_id':entity_id,'name':'AE'+str(entity_id),'tables':[],'relationships':[]}
         entity_id+=1
@@ -203,6 +208,7 @@ def get_abstract_schema(clusters,tables,relationships):
                     curr_to = t['table_id']
             if curr_from and curr_to:
                 e['relationships'].append({'from':curr_from,'to':curr_to})
+    print(abstract_schema)
     return(abstract_schema)
         
 
@@ -250,7 +256,7 @@ def ClusterTables(tables):
                     break
 
     intersects = [0 for i in range(nes+1)]
-    argument = []
+    argument = [[0 for i in range(nes+1)] for j in range(nes**2)]
 
     nas = nes+1
     first_rel = True
@@ -261,13 +267,14 @@ def ClusterTables(tables):
             else:
                 intersects[i] = 0
         if first_rel:
-            argument.append([n for n in intersects])
+            argument[0] = [n for n in intersects]
             clusters.append({'t':[R['name']],'pks':[key for key in R['pks']]})
             remTabs.remove(R)
             first_rel = False
         else:
             found = False
-            for j in range(min(len(argument),nes)):
+            print(argument)
+            for j in range(nes+1):
                 if argument[j] == intersects:
                     target = j+nes+1
                     clusters[target]['t'].append(R['name'])
@@ -278,11 +285,11 @@ def ClusterTables(tables):
                     found = True
                     break;
             if not found:
+                argument[nes-nas] = [n for n in intersects]
                 nas+=1
-                argument.append([n for n in intersects])
                 clusters.append({'t':[R['name']],'pks':[key for key in R['pks']]})
                 remTabs.remove(R)
-    return {'cluster':clusters,'nes':nes,'nas':nas}
+    return {'cluster':clusters,'nes':nes,'nas':nas,'arg':argument}
 
 def OccOrderPKs(tabs):
     pks = {}
