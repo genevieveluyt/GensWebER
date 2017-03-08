@@ -173,6 +173,7 @@ def get_abstract_schema(clusters,tables,relationships):
         if i>nes:
             entity = {'entity_id':entity_id,'name':'AR'+str(entity_id-(nes+1)),'shape':'Triangle','tables':[],'relationships':[]}
             for inter in range(len(argument[i-(nes+1)])):
+                print(argument[i-(nes+1)])
                 if argument[i-(nes+1)][inter]:
                     abstract_schema['relationships'].append({'from':entity_id,'to':inter})
         else:
@@ -212,9 +213,6 @@ def ClusterTables(tables):
     clusters.append({'t':[tables[0]['name']],'pks':[key for key in tables[0]['pks']]})
     remTabs.remove(tables[0])
     nes = 0
-
-
-
     for i in range(1,len(tables)):
         R = tables[i]
         if R['pks'] == clusters[nes]['pks']:
