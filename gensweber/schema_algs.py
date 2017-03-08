@@ -172,10 +172,12 @@ def get_abstract_schema(clusters,tables,relationships):
     for i in range(min(nas+1,len(cluster))):
         if i>nes:
             entity = {'entity_id':entity_id,'name':'AR'+str(entity_id-(nes+1)),'shape':'Triangle','tables':[],'relationships':[]}
+            sum = 0
             for inter in range(len(argument[i-(nes+1)])):
-                print(argument[i-(nes+1)])
+                sum = sum+inter
                 if argument[i-(nes+1)][inter]:
                     abstract_schema['relationships'].append({'from':entity_id,'to':inter})
+            print(sum,end=' ')
         else:
             entity = {'entity_id':entity_id,'name':'AE'+str(entity_id),'tables':[],'relationships':[]}
         entity_id+=1
