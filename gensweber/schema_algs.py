@@ -267,7 +267,7 @@ def ClusterTables(tables):
             first_rel = False
         else:
             found = False
-            for j in range(nas+1):
+            for j in range(min(len(argument),nes)):
                 if argument[j] == intersects:
                     target = j+nes+1
                     clusters[target]['t'].append(R['name'])
