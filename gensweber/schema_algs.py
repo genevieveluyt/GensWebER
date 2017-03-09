@@ -74,7 +74,7 @@ def get_abstract_schema(clusters,tables,relationships):
     table_id = 0
     entity_id = 0
     #Foreach abstract entity or relationship...
-    for i in range(max(nas+1,len(cluster))):
+    for i in range(max(nas,len(cluster))):
         #If it's a relationship...
         if i>nes:
             #Add it to the entities list as a triangular abstract relationship bubble
