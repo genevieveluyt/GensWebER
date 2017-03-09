@@ -29,6 +29,7 @@
 				$.ajax({
 					url: "{{ request.path }}",
 					type: 'POST',
+					contentType: 'application/json',
 					data: dataString,
 					success: function(response) {
 						console.log(new_name);

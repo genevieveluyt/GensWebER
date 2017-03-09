@@ -94,15 +94,10 @@ class db_interface:
 
 		print("Deleted project {}.".format(project_id))
 
-<<<<<<< HEAD
-	def update_project_name(self, username, project_id, new_name):
-		"""Rename a project in the account with the given username."""
-=======
 	def update_project_name(self, username, old_name, new_name):
 		"""Rename a project in the account with the given username."""
 		project = next(project for project in self.get_projects(username) if project['name'] == old_name)
 
->>>>>>> 913108990a7ae2b074499b754e19363dbb91fc96
 		self.db.users.find_one_and_update(
 			{
 				'username': username
