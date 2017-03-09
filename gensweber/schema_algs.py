@@ -197,4 +197,4 @@ def ClusterTables(tables):
 
 def disjoint(l1,l2):
     """Returns true if the given lists share no elements, else false."""
-   return len([x for x in l1 if x in l2])==0
+    return len([x for x in l1 if x in l2])==0

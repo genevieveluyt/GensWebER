@@ -10,10 +10,10 @@ class db_interface:
 
 	def user_exists(self, username):
 		"""Return true if an account exists with the given username, else false."""
-            user = self.db.users.find_one({'username': username})
-            if user:
-                print("User tried to make account with username " + username + " but it exists already.")
-            return True if user else False
+		user = self.db.users.find_one({'username': username})
+		if user:
+			print("User tried to make account with username " + username + " but it exists already.")
+		return True if user else False
 
 	def create_user(self, username, password):
 		"""Create a new account entry with the given username and password."""
@@ -289,7 +289,7 @@ class db_interface:
 				'projects.{}.saved_data.entities.{}'.format(project_id, entity_id): 1
 			}
 		).get('projects', {}).get(project_id, {}).get('saved_data', {}).get('entities', {}).get(entity_id, {})
-        
+
 	def get_abstract_entity_name(self, username, project_id, entity_id):
 		"""Get the name of the given abstract entity or abstract relationship."""
 		saved_shema_data = self.get_saved_abstract_schema_data(username, project_id)
