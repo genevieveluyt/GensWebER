@@ -1,5 +1,7 @@
 class SchemaDiagram {
 	/**
+	 * Create a Go.js diagram for a database schema.
+	 *
 	 * @param {string} divId - The id of the div element where the diagram will be placed into
 	 * @param {string or json} data - Either an object with 'nodes' and 'links' or a stringified JSON produced by SchemaDiagram.getData()
 	 * @param {boolean} editableHeader - Whether or not the user can edit the headers of nodes in the diagram
@@ -22,7 +24,9 @@ class SchemaDiagram {
 	}
 
 	/**
-	 * Check if a node is visible
+	 * Check if a node is visible.
+	 *
+	 * @return {boolean} - true if the node is visible, else false
 	 */
 	isNodeVisible(nodeKey) {
 		var model = this.diagram.model;
@@ -30,7 +34,9 @@ class SchemaDiagram {
 	}
 
 	/**
-	 * Check if a row in a node is visible
+	 * Check if a row in a node is visible.
+	 *
+	 * @return {boolean} - true if the row is visible, else false
 	 */
 	isNodeRowVisible(nodeKey, rowName) {
 		var model = this.diagram.model;
@@ -40,7 +46,7 @@ class SchemaDiagram {
 	}
 
 	/**
-	 * Show or hide a node
+	 * Show or hide a node.
 	 *
 	 * @param {string} nodeKey - The key of the node to show or hide
 	 * @param {boolean} visibility - True shows the node, false hides it and its associated links
@@ -51,7 +57,7 @@ class SchemaDiagram {
 	}
 
 	/**
-	 * Show or hide a row in a node
+	 * Show or hide a row in a node.
 	 *
 	 * @param {string} nodeKey - The key of the node containing the row to show or hide
 	 * @param {string} rowName - The name of the row to show or hide
@@ -64,6 +70,9 @@ class SchemaDiagram {
 		model.setDataProperty(rowData, "visible", visibility)
 	}
 
+	/**
+	 * Get the key of the currently selected node in the diagram.
+	 */
 	getSelectedNodeKey() {
 		var diagram = this.diagram;
 
@@ -80,7 +89,7 @@ class SchemaDiagram {
 	}
 
 	/**
-	 * Show all nodes that are linked to currently selected node
+	 * Show all nodes that are linked to currently selected node.
 	 */
 	showNeighboursOfSelectedNode() {
 		var diagram = this.diagram;
@@ -122,7 +131,7 @@ class SchemaDiagram {
 
 
 	/**
-	 * Export the full diagram to a file
+	 * Export the full diagram to a file.
 	 *
 	 * @param {string} filename - The file name that will be used for the file.
 	 */
@@ -146,7 +155,11 @@ class SchemaDiagram {
 		document.body.removeChild(a);
 	}
 
-	
+	/**
+	 * Get the diagram data that can be used to load the diagram in the same state.
+	 *
+	 * @return {string} - stringified JSON that can be passed into the constructor of this class to reload the diagram in the same state.
+	 */
 	getData() {
 		return this.diagram.model.toJson();
 	}

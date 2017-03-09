@@ -1,9 +1,16 @@
 import mysql.connector
 import copy
 
-#get_dp_schema is the only "public method of schema_algs.py the front end calls it to get all the information about the database in a struct.
-#Input: database name, username, password, host, and port
 def get_db_schema(d,u,p,h,o):
+    """Get data for a high-level representation of a MySQL database schema.
+
+    Keyword arguments:
+    d -- MySQL database name
+    u -- username that will be used to connect to the MySQL database
+    p -- password that will be used to connect to the MySQL database
+    h -- host that will be used to connect to the MySQL database
+    o -- port that will be used to connect to the MySQL database
+    """
     print([u,d,p,h,o])
     #Connect to host
     try:
@@ -45,13 +52,18 @@ def get_db_schema(d,u,p,h,o):
     #Convert the output of ClusterTables into the format used by the front end and add it to the return struct
     data['cluster'] = get_abstract_schema(clusters,tables,relationships)
 
-    #clost the database pointer
+    #close the database pointer
     cnx.close()
     return(data)
 
-#Converts the output from ClusterTables into the format used by the front end
-#Input: abstract entitiy information, database tables, database foreign key relationships
 def get_abstract_schema(clusters,tables,relationships):
+    """Converts the output from ClusterTables into the format used by the front end.
+
+    Keyword arguments:
+    clusters -- abstract entity information produced by running the clustering algorithm
+    tables -- database tables
+    relationships -- database foreign key relationships
+    """
     #save the fields of the structs into local variables
     cluster = clusters['cluster']
     nes = clusters['nes']
@@ -103,13 +115,12 @@ def get_abstract_schema(clusters,tables,relationships):
     return(abstract_schema)
         
 
-#Used for custom sorting by number of primary keys and lexigraphic order
 def tabKey(table):
+    """Used for custom sorting by number of primary keys and lexigraphic order"""
     return ''.join([str(len(table['pks']))]+table['pks']);
 
-#Generates an abstract schema based on the database information using the algorithm outlined in class
-#Input: tables of the database
 def ClusterTables(tables):
+    """Generates an abstract schema based on the database information using the algorithm outlined in class"""
     clusters = []
     remTabs = copy.deepcopy(tables)
     #insert the first table into an AE
@@ -184,7 +195,6 @@ def ClusterTables(tables):
                 remTabs.remove(R)
     return {'cluster':clusters,'nes':nes,'nas':nas,'arg':argument}
 
-#Disjoint function takes two lists and returns true if the share no elements. Used in class algorithm
-#Input: two lists
 def disjoint(l1,l2):
+    """Returns true if the given lists share no elements, else false."""
    return len([x for x in l1 if x in l2])==0
