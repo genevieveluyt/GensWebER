@@ -15,6 +15,7 @@
 			});		
 		};
 		function editProject(button, name, project_id) {
+			console.log(name);
 			if(button.childNodes[1].innerHTML == 'mode_edit') {
 				button.parentNode.contentEditable = true;
 				button.childNodes[1].innerHTML = 'done';	
@@ -22,12 +23,13 @@
 			else {
 				button.parentNode.contentEditable = false;
 				new_name = button.parentNode.childNodes[1].innerHTML + button.parentNode.childNodes[2].nodeValue;
-				console.log(new_name);
-				var data = {old_name: name, new_name:new_name},
+				var data = {old_name: name, new_name:new_name};
+				var dataString = JSON.stringify(data);
+				console.log(dataString);
 				$.ajax({
 					url: "{{ request.path }}",
 					type: 'POST',
-					data: data,
+					data: dataString,
 					success: function(response) {
 						console.log(new_name);
 						console.log("Project " + project_id + " editted");
@@ -78,7 +80,7 @@
 							<tr>
 								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
 									<a href="{{ url_for('abstract_diagram', project_id=project['project_id']) }}">{{ project['name'] }}</a> {{ project['project_name'] }}
-									<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="editProject(this, '{{ project['project_name'] }}', '{{ project['project_id'] }}')">
+									<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="editProject(this, '{{ project['name'] }}', '{{ project['project_id'] }}')">
 										<i class="material-icons">mode_edit</i>
 									</button>
 								</td>

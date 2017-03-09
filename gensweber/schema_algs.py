@@ -1,86 +1,24 @@
 import mysql.connector
 import copy
 
-def get_abstract_schema(db_name, db_user, db_pass, host, port):
-    fake_schema = {
-        'entities': [
-            {
-                'entity_id': 0,
-                'name': "AE1",
-                'tables': [
-                    {
-                        'table_id': 0,
-                        'name': "TABLE 1",
-                        'primary_keys': [ "Dog" ],
-                        'attributes': [ "Siberian", "Shiba Inu" ]
-                    },
-                    {
-                        'table_id': 1,
-                        'name': 'TABLE 2',
-                        'primary_keys': [ "Cat" ],
-                        'attributes': [ "Persian", "Ragdoll" ]
-                    }
-
-                ],
-                'relationships': [
-                    {
-                        'from': 0,
-                        'to': 1
-                    }
-                ]
-            },
-            {
-                'entity_id': 1,
-                'name': "AR1",
-                'shape': "Triangle",
-                'tables': [
-                    {
-                        'table_id': 2,
-                        'name': "TABLE 3",
-                        'primary_keys': [ "Bunny" ],
-                        'attributes': [ "Holland Lop", "Angora" ]
-                    },
-                    {
-                        'table_id': 3,
-                        'name': 'TABLE 4',
-                        'primary_keys': [ "Bear" ],
-                        'attributes': [ "Brown", "Polar", "Black" ]
-                    },
-                    {
-                        'table_id': 4,
-                        'name': 'TABLE 5',
-                        'primary_keys': [ "Wolf" ],
-                        'attributes': [ "Timber", "Grey" ]
-                    }
-                ],
-                'relationships': [
-                    {
-                        'from': 2,
-                        'to': 3
-                    },
-                    {
-                        'from': 2,
-                        'to': 4
-                    }
-                ]
-            }
-        ],
-        'relationships': [
-            {
-                'from': 0,
-                'to': 1
-            }
-        ]
-    }
-    return fake_schema
-
 def get_db_schema(d,u,p,h,o):
+    """Get data for a high-level representation of a MySQL database schema.
+
+    Keyword arguments:
+    d -- MySQL database name
+    u -- username that will be used to connect to the MySQL database
+    p -- password that will be used to connect to the MySQL database
+    h -- host that will be used to connect to the MySQL database
+    o -- port that will be used to connect to the MySQL database
+    """
     print([u,d,p,h,o])
+    #Connect to host
     try:
         cnx = mysql.connector.connect(user=u, database=d, password=p,host=h,port = o)
     except:
         print("Unable to connect to database")
         return None
+    #Create a databse curser and use it to fetch all the tables, primary keys, and foreign keys
     allTabsCurs = cnx.cursor()
     allTabsCurs.execute("show tables")
     tableNames = allTabsCurs.fetchall()
@@ -89,78 +27,44 @@ def get_db_schema(d,u,p,h,o):
     data = {}
     tables = []
     relationships = []
+    #For each table...
     for table in tableNames:
         currTab = {}
         allTabsCurs.execute("describe "+table[0])
         colInfo = allTabsCurs.fetchall()
         cols = []
         pris = []
+        #Harvest all the column information
         for col in colInfo:
             cols = cols + [col[0]]
             if col[3]=='PRI':
                 pris.append(col[0])
         tables.append({"name":table[0],'attributes':cols,'pks':sorted(pris)})
+    #Save all the tables to the return struct
     data['tables'] = tables
-    #tables = TTables()
 	
+    #For each foreign key, add the table it's referenced in and the tables it references to the relationships section of the return struct
     for n in fkNames:
         relationships.append({'from':n[-2],'to':n[-1]})
     data['relationships'] = relationships
+    #Generate abstract clusters and relationships
     clusters =  ClusterTables(sorted(tables,key=tabKey))
+    #Convert the output of ClusterTables into the format used by the front end and add it to the return struct
     data['cluster'] = get_abstract_schema(clusters,tables,relationships)
 
+    #close the database pointer
     cnx.close()
     return(data)
 
-def TTables():
-    tab = [
-            {'name':'R1',
-            'pks':['Ka','K1'],
-            'attributes':[]},
-
-            {'name':'R2',
-            'pks':['Ka','K2'],
-            'attributes':[]},
-
-            {'name':'R3',
-            'pks':['Ka','K3'],
-            'attributes':[]},
-
-            {'name':'R4',
-            'pks':['Kc','Kx','K4'],
-            'attributes':[]},
-
-            {'name':'R5',
-            'pks':['Kc','Kx','Kd','K5'],
-            'attributes':[]},
-
-            {'name':'R6',
-            'pks':['Ka','Kb','K6'],
-            'attributes':[]},
-
-            {'name':'R7',
-            'pks':['Ka','Kc','Kx','Ke','K7'],
-            'attributes':[]},
-            
-            {'name':'R8',
-            'pks':['Ka','Ka','K8'],
-            'attributes':[]},
-
-            {'name':'R9',
-            'pks':['Ka','Kb','Kc','Kx','Kd','K9'],
-            'attributes':[]},
-
-            {'name':'R10',
-            'pks':['Kc','Ky','K10'],
-            'attributes':[]},
-
-            {'name':'R11',
-            'pks':['Ka','Kc','K11'],
-            'attributes':[]}
-            ]
-    return tab
-
 def get_abstract_schema(clusters,tables,relationships):
+    """Converts the output from ClusterTables into the format used by the front end.
+
+    Keyword arguments:
+    clusters -- abstract entity information produced by running the clustering algorithm
+    tables -- database tables
+    relationships -- database foreign key relationships
+    """
+    #save the fields of the structs into local variables
     cluster = clusters['cluster']
     nes = clusters['nes']
     nas = clusters['nas']
@@ -169,15 +73,22 @@ def get_abstract_schema(clusters,tables,relationships):
     entities = []
     table_id = 0
     entity_id = 0
+    #Foreach abstract entity or relationship...
     for i in range(max(nas+1,len(cluster))):
+        #If it's a relationship...
         if i>nes:
+            #Add it to the entities list as a triangular abstract relationship bubble
             entity = {'entity_id':entity_id,'name':'AR'+str(entity_id-(nes+1)),'shape':'Triangle','tables':[],'relationships':[]}
+            #Use the "argument" array from ClusterTables to list the lines that should connect AEs to ARs
             for inter in range(len(argument[i-(nes+1)])):
                 if argument[i-(nes+1)][inter]:
                     abstract_schema['relationships'].append({'from':entity_id,'to':inter})
+        #If it's an entity...
         else:
+            #Just add it to the entities list
             entity = {'entity_id':entity_id,'name':'AE'+str(entity_id),'tables':[],'relationships':[]}
         entity_id+=1
+        #Populate the entity with the proper tables, converting them to "front end" format
         for tab in cluster[i]['t']:
             table = [t for t in tables if t['name']==tab]
             table = table[0]
@@ -189,6 +100,7 @@ def get_abstract_schema(clusters,tables,relationships):
             table_id+=1
         entities.append(entity)
     abstract_schema['entities'] = entities
+    #Link all the tables within each entities by their primary keys
     for rel in relationships:
         curr_from = 0
         curr_to = 0
@@ -204,11 +116,16 @@ def get_abstract_schema(clusters,tables,relationships):
         
 
 def tabKey(table):
+    """Used for custom sorting by number of primary keys and lexigraphic order"""
     return ''.join([str(len(table['pks']))]+table['pks']);
 
 def ClusterTables(tables):
+    """Generates an abstract schema based on the database information using the algorithm outlined in class"""
     clusters = []
     remTabs = copy.deepcopy(tables)
+    #insert the first table into an AE
+    #remTabs is the tables left to handle
+    #The rest of this algorithm is explained fully in the provided article
     clusters.append({'t':[tables[0]['name']],'pks':[key for key in tables[0]['pks']]})
     remTabs.remove(tables[0])
     nes = 0
@@ -278,16 +195,6 @@ def ClusterTables(tables):
                 remTabs.remove(R)
     return {'cluster':clusters,'nes':nes,'nas':nas,'arg':argument}
 
-def OccOrderPKs(tabs):
-    pks = {}
-    for tab in tabs:
-        for pk in tab['pks']:
-            if pk not in pks:
-                pks[pk] = 1
-            else:
-                pks[pk] += 1
-    return sorted(pks,key=pks.get,reverse=True)
-
-
 def disjoint(l1,l2):
-   return len([x for x in l1 if x in l2])==0
+    """Returns true if the given lists share no elements, else false."""
+    return len([x for x in l1 if x in l2])==0
