@@ -29,12 +29,10 @@ def dashboard():
 
     error = None
 
-    # If user added a new project or edited the name of an existing one
     if request.method == 'POST':
-        old_name = request.form.get('old_name', None)
-        if old_name:
-            db.update_project_name(username, old_name, new_name)
-        else:
+
+        # If user created a new project
+        if request.form:
             project_name = request.form['project_name']
             db_name = request.form['db_name']
             db_user = request.form['username']
@@ -43,12 +41,18 @@ def dashboard():
             port = request.form['port']
 
             db_schema = schema_algs.get_db_schema(db_name, db_user, db_pass, host, port)
+
             if db_schema:
                 abstract_schema = db_schema.get('cluster')
                 db.create_project(username, project_name, db_name, db_user, db_pass, host, port, abstract_schema)
             else:
                 error = 'Unable to connect to {}. Please check your connection details.'.format(db_name)
-        
+        else: # Change name of existing project
+            old_name = request.json['old_name']
+            new_name = request.json['new_name']
+            db.update_project_name(username, old_name, new_name)
+            return ""
+
     projects = db.get_projects(username)
 
     return render_template('dashboard.html', projects=projects, error=error)
