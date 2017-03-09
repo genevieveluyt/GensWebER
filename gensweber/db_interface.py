@@ -94,15 +94,22 @@ class db_interface:
 
 		print("Deleted project {}.".format(project_id))
 
+<<<<<<< HEAD
 	def update_project_name(self, username, project_id, new_name):
 		"""Rename a project in the account with the given username."""
+=======
+	def update_project_name(self, username, old_name, new_name):
+		"""Rename a project in the account with the given username."""
+		project = next(project for project in self.get_projects(username) if project['name'] == old_name)
+
+>>>>>>> 913108990a7ae2b074499b754e19363dbb91fc96
 		self.db.users.find_one_and_update(
 			{
 				'username': username
 			},
 			{
 				'$set': {
-					'projects.{}.name'.format(project_id): new_name
+					'projects.{}.name'.format(project['project_id']): new_name
 				}
 			}
 		)
@@ -121,7 +128,10 @@ class db_interface:
 		projects_array = []
 
 		for key, value in projects.iteritems():
-			value.pop('abstract_schema')
+			# linux
+			value.pop('abstract_schema'.decode('unicode-escape'),None)
+			# windows
+			value.pop('abstract_schema', None)
 			projects_array.append(value)
 
 		return projects_array
