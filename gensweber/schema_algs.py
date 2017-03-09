@@ -185,7 +185,7 @@ def get_abstract_schema(clusters,tables,relationships):
                 'table_id':table_id,
                 'name':table['name'],
                 'primary_keys':table['pks'],
-                'attributes':table['attributes']})
+                'attributes':[a for a in table['attributes'] if a not in table['pks']]})
             table_id+=1
         entities.append(entity)
     abstract_schema['entities'] = entities

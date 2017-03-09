@@ -14,6 +14,28 @@
 				dialog.close();
 			});		
 		};
+		function editProject(button, name, project_id) {
+			if(button.childNodes[1].innerHTML == 'mode_edit') {
+				button.parentNode.contentEditable = true;
+				button.childNodes[1].innerHTML = 'done';	
+			}
+			else {
+				button.parentNode.contentEditable = false;
+				new_name = button.parentNode.childNodes[1].innerHTML + button.parentNode.childNodes[2].nodeValue;
+				console.log(new_name);
+				var data = {old_name: name, new_name:new_name},
+				$.ajax({
+					url: "{{ request.path }}",
+					type: 'POST',
+					data: data,
+					success: function(response) {
+						console.log(new_name);
+						console.log("Project " + project_id + " editted");
+						window.location.href = "{{ url_for('dashboard') }}"				
+					}	
+				})
+			}
+		}
 		function deleteProject(project_id) {
 			$.ajax({
 				url: "{{ url_for('dashboard') }}" + project_id,
@@ -35,54 +57,6 @@
 			    <i class="material-icons">add</i>
 			</button>
 		    </div>
-		    <dialog class="mdl-dialog" id="add-project">
-			<h4 class="mdl-dialog__title">Add Database</h4>
-			<div class="mdl-dialog__content">
-				<form action='{{ request.path }}' method=post>
-				    	<div class="form-group">
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						    <input class="mdl-textfield__input" type="text" name="project_name">
-						    <label class="mdl-textfield__label" for="project_name">Project Name</label>
-						</div>
-					</div>
-				    	<div class="form-group">
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						    <input class="mdl-textfield__input" type="text" name="db_name">
-						    <label class="mdl-textfield__label" for="db_name">Database Name</label>
-						</div>
-					</div>
-				    	<div class="form-group">
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					    		<input class="mdl-textfield__input" type="text" name="username">
-					    		<label class="mdl-textfield__label" for="username">User</label>
-						</div>
-					</div>
-				    	<div class="form-group">
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						    <input class="mdl-textfield__input" type="password" name="password">
-						    <label class="mdl-textfield__label" for="password">Password</label>
-						</div>
-					</div>
-				    	<div class="form-group">
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						    <input class="mdl-textfield__input" type="text" name="host">
-						    <label class="mdl-textfield__label" for="host">Host</label>
-						</div>
-					</div>
-				    	<div class="form-group">
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" name="port">
-						    <label class="mdl-textfield__label" for="port">Port</label>
-						    <span class="mdl-textfield__error">Input is not a number!</span>
-						</div>
-					</div>
-					<div class="mdl-dialog__actions">
-			    			<button type="submit" class="mdl-button" name="save-project-button">Agree</button>
-			    			<button type="button" class="mdl-button close">Disagree</button>
-					</div>
-			    	</form>
-			</div>
-		    </dialog>
 		</div>
 		<div class="row">
 			{% if error %}
@@ -104,6 +78,9 @@
 							<tr>
 								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
 									<a href="{{ url_for('abstract_diagram', project_id=project['project_id']) }}">{{ project['name'] }}</a> {{ project['project_name'] }}
+									<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="editProject(this, '{{ project['project_name'] }}', '{{ project['project_id'] }}')">
+										<i class="material-icons">mode_edit</i>
+									</button>
 								</td>
 								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
 									{{ project['db_name'] }}
@@ -126,32 +103,54 @@
 		    	</div>
 		</div>
         </div>
-
-	<!--<div class="container">
-		<div class="row">
-			<h1>Project Dashboard</h1>
-			<table class="table">
-				<tbody id="projects-table">
-					{% for project in projects %}
-						<tr>
-							<td project-id='{{ project["project_id"] }}' >
-								<a href="{{ url_for('abstract_diagram', project_id=project['project_id']) }}">{{ project['name'] }}</a> {{ project['db_name'] }}
-							</td>
-							<td>
-								<button type="button" class="btn" onclick="deleteProject({{ project['project_id'] }})">Delete</button>
-							</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
+	<dialog class="mdl-dialog" id="add-project">
+		<h4 class="mdl-dialog__title">Add Database</h4>
+		<div class="mdl-dialog__content">
+			<form action='{{ request.path }}' method=post>
+			    	<div class="form-group">
+					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					    <input class="mdl-textfield__input" type="text" name="project_name">
+					    <label class="mdl-textfield__label" for="project_name">Project Name</label>
+					</div>
+				</div>
+			    	<div class="form-group">
+					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					    <input class="mdl-textfield__input" type="text" name="db_name">
+					    <label class="mdl-textfield__label" for="db_name">Database Name</label>
+					</div>
+				</div>
+			    	<div class="form-group">
+					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				    		<input class="mdl-textfield__input" type="text" name="username">
+				    		<label class="mdl-textfield__label" for="username">User</label>
+					</div>
+				</div>
+			    	<div class="form-group">
+					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					    <input class="mdl-textfield__input" type="password" name="password">
+					    <label class="mdl-textfield__label" for="password">Password</label>
+					</div>
+				</div>
+			    	<div class="form-group">
+					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					    <input class="mdl-textfield__input" type="text" name="host">
+					    <label class="mdl-textfield__label" for="host">Host</label>
+					</div>
+				</div>
+			    	<div class="form-group">
+					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" name="port">
+					    <label class="mdl-textfield__label" for="port">Port</label>
+					    <span class="mdl-textfield__error">Input is not a number!</span>
+					</div>
+				</div>
+				<div class="mdl-dialog__actions">
+		    			<button type="submit" class="mdl-button" name="save-project-button">Agree</button>
+		    			<button type="button" class="mdl-button close">Disagree</button>
+				</div>
+		    	</form>
 		</div>
-
-		<div class="add-db">
-			<button type="button" class="btn btn-success btn-circle btn-xl" data-toggle="modal" data-target="#add-project-modal"><i class="glyphicon glyphicon-plus"></i></button>
-		</div>
-	</div>-->
-			
-	
+	</dialog>	
     
     <div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     	<div class="modal-dialog" role="document">

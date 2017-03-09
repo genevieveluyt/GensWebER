@@ -127,4 +127,4 @@ def abstract_entity(project_id, entity_id):
     entity_name = db.get_abstract_entity_name(username, project_id, entity_id)
     diagram_data, tables = db.get_abstract_entity(username, project_id, entity_id)
 
-    return render_template('abstract_entity.html', entity_name=entity_name, diagram_data=diagram_data, tables=tables)
+    return render_template('abstract_entity.html', entity_name=entity_name, diagram_data=diagram_data, tables=tables, project_id=project_id)
