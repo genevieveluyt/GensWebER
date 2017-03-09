@@ -2,6 +2,7 @@ from flask import Flask, session
 from flask_pymongo import PyMongo
 import json
 
+#Class used by the gensweber.py file to access the projects database
 class db_interface:
 	# table names
 	USERS_TABLE = 'users'
@@ -9,16 +10,19 @@ class db_interface:
 	SCHEMAS_TABLE = 'abstract_schemas'
 	ENTITIES_TABLE = 'abstract_entities'
 
+        #Create a new DB entry
 	def __init__(self, app):
 		self.mongo = PyMongo(app)
 		self.db = self.mongo.db
 
+        #Check if user already has an account in the DB
 	def user_exists(self, username):
             user = self.db.users.find_one({'username': username})
             if user:
                 print("User tried to make account with username " + username + " but it exists already.")
             return True if user else False
 
+        #Add new user to the DB
 	def create_user(self, username, password):
 		self.db.users.insert({
 			'username': username,
@@ -27,6 +31,7 @@ class db_interface:
 		})
 		print("Account created for " + username + ".")
 
+        #Confirm user's credentials
 	def validate_login(self, username, password):
 		user = self.db.users.find_one({
 			'username': username,
@@ -34,6 +39,7 @@ class db_interface:
 		})
 		return True if user else False
 
+        #Create a new project in the DB, uses pregenerated schema information
 	def create_project(self, username, name, db_name, db_user, db_password, host, port, abstract_schema):
 		project_id = self.db.users.find_one({'username': username}, {'project_id_counter': 1})['project_id_counter']
 		self.db.users.find_one_and_update(
@@ -60,6 +66,7 @@ class db_interface:
 		)
 		print('Created project {}.'.format(project_id))
 
+        #Delete project from the DB
 	def delete_project(self, username, project_id):
 		self.db.users.find_one_and_update(
 			{
@@ -73,6 +80,7 @@ class db_interface:
 		)
 		print("Deleted project {}.".format(project_id))
 
+        #Rename a project
 	def update_project_name(self, username, project_id, new_name):
 		self.db.users.find_one_and_update(
 			{
@@ -85,6 +93,7 @@ class db_interface:
 			}
 		)
 
+        #Get a user's projects
 	def get_projects(self, username):
 		projects = self.db.users.find_one({'username': username}, {'projects':1}).get('projects', {})
 		projects_array = []
@@ -94,12 +103,14 @@ class db_interface:
 			projects_array.append(value)
 		return projects_array
 
+        #Once a user chooses a project, load its details
 	def get_project_details(self, username, project_id):
 		project = self.db.users.find_one({'username': username}, {'projects.{}'.format(project_id): 1}).get('projects', {}).get(project_id, {})
 		project.pop('abstract_schema'.decode('unicode-escape'),None)
 		project.pop('abstract_schema', None)
 		return project
 
+        #Load the abstract schema of a project
 	def get_abstract_schema(self, username, project_id):
 		saved_data = self.db.users.find_one(
 			{
@@ -148,6 +159,7 @@ class db_interface:
 
 		return data, data['nodes']
 
+        #Update a project's abstract schema
 	def save_abstract_schema(self, username, project_id, data):
 		self.db.users.find_one_and_update(
 			{
@@ -160,6 +172,7 @@ class db_interface:
 			}
 		)
 
+        #Get more information about an abstract schema, used for Drill In
 	def get_abstract_entity(self, username, project_id, entity_id):
 		saved_data = self.get_saved_abstract_entity_data(username, project_id, entity_id)
 		if saved_data:
@@ -202,6 +215,7 @@ class db_interface:
 
 		return data, data['nodes']
 
+        #Save changes to an abstract entity
 	def save_abstract_entity(self, username, project_id, entity_id, data):
 		self.db.users.find_one_and_update(
 			{
@@ -214,6 +228,7 @@ class db_interface:
 			}
 		)
 
+        #Load schema information
 	def get_saved_abstract_schema_data(self, username, project_id):
 		return self.db.users.find_one(
 			{
@@ -224,6 +239,7 @@ class db_interface:
 			}
 		).get('projects', {}).get(project_id, {}).get('saved_data', {}).get('abstract_schema', {})
 
+        #Load entity information
 	def get_saved_abstract_entity_data(self, username, project_id, entity_id):
 		return self.db.users.find_one(
 			{
@@ -233,7 +249,8 @@ class db_interface:
 				'projects.{}.saved_data.entities.{}'.format(project_id, entity_id): 1
 			}
 		).get('projects', {}).get(project_id, {}).get('saved_data', {}).get('entities', {}).get(entity_id, {})
-
+        
+        #Load an entity's custom name
 	def get_abstract_entity_name(self, username, project_id, entity_id):
 		saved_shema_data = self.get_saved_abstract_schema_data(username, project_id)
 		if (saved_shema_data):
