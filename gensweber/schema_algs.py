@@ -1,5 +1,10 @@
 import mysql.connector
 import copy
+import os
+import javalang
+
+DEBUG = False
+VERBOSE = False
 
 def get_db_schema(d,u,p,h,o):
     """Get data for a high-level representation of a MySQL database schema.
@@ -199,3 +204,138 @@ def ClusterTables(tables):
 def disjoint(l1,l2):
     """Returns true if the given lists share no elements, else false."""
     return len([x for x in l1 if x in l2])==0
+
+def get_foreign_key_candidates(directory):
+    """Get foreign key candidates by looking for @ManyToOne, @OneToOne, @OneToMany and @JoinColumn annotations in Java files.
+
+    Keyword arguments:
+    directory -- the local file directory containing Java files to parse for foreign key candidates
+    """
+
+    # Maps absolute class names (package name + class name) to a database table specified with the @Table annotation
+    class_table_map = dict()
+
+    # Keeps track of class names in a package so that referenced class names not found in an import statement can be resolved
+    package_classes = dict()
+
+    foreign_key_candidates = []
+
+    for root, dirs, filenames in os.walk(directory):
+        for filename in filenames:
+            if filename[-5:] == ".java":
+                with open(os.path.join(root, filename), "r") as file:
+                    java_tree = javalang.parse.parse(file.read())
+
+                if java_tree.package is None:
+                    package_name = ""
+                else:
+                    package_name = java_tree.package.name
+                imports = [import_statement.path for import_statement in java_tree.imports]
+
+                if DEBUG and VERBOSE:
+                    print "File name: {}".format(filename)
+                    print "Package: {}".format(package_name)
+                    print "Imports: {}".format(imports)
+
+                for path, class_node in java_tree.filter(javalang.tree.ClassDeclaration):
+                    if package_name:
+                        package_classes.setdefault(package_name, []).append(class_node.name)
+                    class_name = "{}.{}".format(package_name, class_node.name)
+                    table_name = None
+
+                    # Look for @Table annotations and associate them with the class in class_table_map dictionary
+                    for class_annotation in class_node.annotations:
+                        if class_annotation.name == "Table":
+                            for name_val in class_annotation.element or []:
+                                if name_val.name == "name":
+                                    table_name = name_val.value.value[1:-1]
+                                    if DEBUG and class_name in class_table_map:
+                                        print ("{} already mapped to a table...".format(class_name))
+                                    class_table_map[class_name] = table_name            
+                    
+                    if not table_name:
+                        continue
+
+                    for field_node in class_node.fields:
+                        relation_type = None
+                        foreign_key_name = None
+                        referenced_column_name = None
+                        local_referenced_table_class = None
+
+                        if type(field_node.type) is javalang.tree.BasicType:
+                            continue
+                        else:
+                            if field_node.type.arguments:
+                                # If the variable type is a generic class like Set<Admission> or List<org.Tickler>, get the class name from inside the angle brackets
+                                var_type = field_node.type.arguments[0].type
+                            else:
+                                var_type = field_node.type
+                            
+                            if var_type.sub_type:
+                                # If the variable type is an absolute class name like org.Admission.Tickler, walk through the nodes and turn it into a string
+                                var_type_string = var_type.name
+                                while var_type.sub_type:
+                                    var_type = var_type.sub_type
+                                    var_type_string += ".{}".format(var_type.name)
+                                referenced_table_class = var_type_string
+                            else:
+                                # Else look for an import statement to get the absolute class name
+                                var_class = var_type.name
+                                var_import = next((item for item in imports if item[-len(var_class):] == var_class), None)
+                                if var_import:
+                                    referenced_table_class = var_import
+                                elif var_class not in ['String', 'Integer', 'Double', 'Boolean']:
+                                    # If there is no import statement for the class, the class is likely in another file in the same package. It will be determined after all files have been parsed.
+                                    local_referenced_table_class = var_class
+                                else:
+                                    continue
+                        
+                        # Look for @ManyToOne, @OneToOne, @OneToMany and @JoinColumn annotations to get information about the foreign key and the primary key it references
+                        for field_annotation in field_node.annotations:
+                            if field_annotation.name in ["ManyToOne", "OneToOne", "OneToMany"]:
+                                relation_type = field_annotation.name
+                            if field_annotation.name == "JoinColumn":
+                                for name_val in field_annotation.element or []:
+                                    if name_val.name == "name":
+                                        foreign_key_name = name_val.value.value[1:-1]
+                                    elif name_val.name == "referencedColumnName":
+                                        referenced_column_name = name_val.value.value[1:-1]
+                                if not referenced_column_name:
+                                    # If there is no referenced column specified, assume it is the same as the foreign key name
+                                    referenced_column_name = foreign_key_name
+                        if foreign_key_name:
+                            foreign_key_candidates.append({
+                                "relation_type": relation_type,
+                                "foreign_key_name": foreign_key_name,
+                                "table_name": table_name,
+                                "class_name": class_name,
+                                "referenced_key_name": referenced_column_name,
+                                "referenced_table_class": referenced_table_class,
+                                "referenced_table_name": None,  #placeholder
+                                "package_name": package_name,
+                                "local_referenced_table_class": local_referenced_table_class
+                            })
+
+    for foreign_key_candidate in foreign_key_candidates:
+        local_referenced_table_class = foreign_key_candidate["local_referenced_table_class"]
+        if local_referenced_table_class:
+            # If a referenced class name could not be found in an import statement, look for it in the class's package
+            package_name = foreign_key_candidate["package_name"]
+            class_in_package = next((item for item in package_classes[package_name] if item[-len(local_referenced_table_class):] == local_referenced_table_class), None)
+            if class_in_package:
+                foreign_key_candidate["referenced_table_class"] = "{}.{}".format(package_name, local_referenced_table_class)
+            elif DEBUG:
+                print "Could not find absolute class name for {} in class {}".format(local_referenced_table_class, foreign_key_candidate["class_name"])
+
+        referenced_table_name = class_table_map.get(foreign_key_candidate["referenced_table_class"], None)
+        if referenced_table_name:
+            foreign_key_candidate["referenced_table_name"] = referenced_table_name
+        elif DEBUG:
+            print "Could not find table name for class {}".format(foreign_key_candidate["referenced_table_class"]) 
+            if VERBOSE:
+                print foreign_key_candidate
+                print ""
+
+    if DEBUG:
+        print [foreign_key for foreign_key in foreign_key_candidates if foreign_key["referenced_table_name"]]
+    return [foreign_key for foreign_key in foreign_key_candidates if foreign_key["referenced_table_name"]]
