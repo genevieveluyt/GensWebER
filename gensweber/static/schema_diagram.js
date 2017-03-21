@@ -181,6 +181,7 @@ class SchemaDiagram {
 		var panelBodyFont = "bold 14px sans-serif";
 		var panelBodyFontColour = "#333333";
 		var linkColour = "#303B45";
+		var foreignKeyCandidateLinkColour = "#ff4081";		// pink
 		var linkTextFont = "bold 14px sans-serif";
 		var linkTextColour = "#1967B3"
 
@@ -378,7 +379,14 @@ class SchemaDiagram {
 					{
 						stroke: linkColour,
 						strokeWidth: 2.5
-					}
+					},
+					new go.Binding("stroke", "isForeignKeyCandidate", function(isForeignKeyCandidate) { 
+						if (isForeignKeyCandidate) {
+							return foreignKeyCandidateLinkColour;
+						} else {
+							return linkColour;
+						}
+					})
 				),
 				$(
 					go.TextBlock,  // the "from" label
