@@ -39,8 +39,9 @@ def dashboard():
             db_pass = request.form['password']
             host = request.form['host']
             port = request.form['port']
+            java_directory = request.form.get('java_directory', None)     # where to look for foreign key candidates
 
-            db_schema = schema_algs.get_db_schema(db_name, db_user, db_pass, host, port)
+            db_schema = schema_algs.get_db_schema(db_name, db_user, db_pass, host, port, java_directory)
 
             if db_schema:
                 abstract_schema = db_schema.get('cluster')

@@ -6,7 +6,7 @@ import javalang
 DEBUG = False
 VERBOSE = False
 
-def get_db_schema(d,u,p,h,o):
+def get_db_schema(d,u,p,h,o,dir):
     """Get data for a high-level representation of a MySQL database schema.
 
     Keyword arguments:
@@ -15,6 +15,7 @@ def get_db_schema(d,u,p,h,o):
     p -- password that will be used to connect to the MySQL database
     h -- host that will be used to connect to the MySQL database
     o -- port that will be used to connect to the MySQL database
+    dir -- directory in which to look for Java files that can be used to determine foreign key candidates
     """
     print([u,d,p,h,o])
     #Connect to host
@@ -211,6 +212,9 @@ def get_foreign_key_candidates(directory):
     Keyword arguments:
     directory -- the local file directory containing Java files to parse for foreign key candidates
     """
+
+    if not directory:
+        return []
 
     # Maps absolute class names (package name + class name) to a database table specified with the @Table annotation
     class_table_map = dict()
