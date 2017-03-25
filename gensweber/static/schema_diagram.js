@@ -156,6 +156,26 @@ class SchemaDiagram {
 	}
 
 	/**
+	 * Expand or collapse all nodes in the diagram (show or hide all rows in all nodes).
+	 *
+	 * @param {boolean} expand - True to expand all entities, false to collapse all entities.
+	 */
+	expandAllNodes(expand=true) {
+		var model = this.diagram.model;
+		var dataArray = model.nodeDataArray;
+		for (var i = 0; i < dataArray.length; i++) {
+			model.setDataProperty(dataArray[i], "expanded", expand);
+		}
+	}
+
+	/**
+	 *	Collapse all nodes in the diagram (hide all rows in all nodes)
+	 */
+	collapseAllNodes() {
+		this.expandAllNodes(false);
+	}
+
+	/**
 	 * Get the diagram data that can be used to load the diagram in the same state.
 	 *
 	 * @return {string} - stringified JSON that can be passed into the constructor of this class to reload the diagram in the same state.

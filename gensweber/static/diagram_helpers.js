@@ -105,3 +105,17 @@ function setNodeVisibility(nodeKey, visible) {
 function setRowVisibility(nodeKey, rowName, visible) {
 	schemaDiagram.setRowVisibility(nodeKey, rowName, visible);
 }
+
+/**
+ * Expand all nodes in the diagram (show all rows in all nodes).
+ */
+function expandAllNodes() {
+	schemaDiagram.expandAllNodes();
+}
+
+/**
+ *	Collapse all nodes in the diagram (hide all rows in all nodes)
+ */
+function collapseAllNodes() {
+	schemaDiagram.collapseAllNodes();
+}
