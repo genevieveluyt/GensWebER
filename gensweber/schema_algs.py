@@ -6,7 +6,7 @@ import javalang
 DEBUG = False
 VERBOSE = False
 
-def get_db_schema(d,u,p,h,o,dir):
+def get_db_schema(d,u,p,h,o,java_dir):
     """Get data for a high-level representation of a MySQL database schema.
 
     Keyword arguments:
@@ -17,6 +17,7 @@ def get_db_schema(d,u,p,h,o,dir):
     o -- port that will be used to connect to the MySQL database
     dir -- directory in which to look for Java files that can be used to determine foreign key candidates
     """
+
     print([u,d,p,h,o])
     #Connect to host
     try:
@@ -48,16 +49,39 @@ def get_db_schema(d,u,p,h,o,dir):
         tables.append({"name":table[0],'attributes':cols,'pks':sorted(pris)})
     #Save all the tables to the return struct
     data['tables'] = tables
-	
+
     #For each foreign key, add the table it's referenced in and the tables it references to the relationships section of the return struct
     for n in fkNames:
         relationships.append({'from':n[-2],'to':n[-1]})
+
     data['relationships'] = relationships
     #Generate abstract clusters and relationships
     clusters =  ClusterTables(sorted(tables,key=tabKey))
     #Convert the output of ClusterTables into the format used by the front end and add it to the return struct
     data['cluster'] = get_abstract_schema(clusters,tables,relationships)
 
+    fkCans = get_foreign_key_candidates(java_dir)
+
+    print("foreign key candidates: ", [{"from": fkey['table_name'], "to": fkey['referenced_table_name'], "class": fkey['class_name']} for fkey in fkCans])
+    for fk in fkCans:
+        for ent in data['cluster']['entities']:
+            f = None
+            t = None
+            for tName in ent['tables']:
+                if tName["name"] == fk["table_name"]:
+                    f = tName["table_id"]
+                elif tName["name"] == fk["referenced_table_name"]:
+                    t = tName["table_id"]
+            if t is not None and f is not None:
+                relExists = False
+                for rel in ent["relationships"]:
+                    if (rel["from"] == f and rel["to"] == t) or (rel["from"] == t and rel["to"] == f):
+                        relExists = True
+                        break
+                if not relExists:
+                    ent["relationships"].append({'from':f,'to':t,'isForeignKeyCandidate': True})
+                break
+    
     #close the database pointer
     cnx.close()
     return(data)
