@@ -62,7 +62,6 @@ def get_db_schema(d,u,p,h,o,java_dir):
 
     fkCans = get_foreign_key_candidates(java_dir)
 
-    print("foreign key candidates: ", [{"from": fkey['table_name'], "to": fkey['referenced_table_name'], "class": fkey['class_name']} for fkey in fkCans])
     for fk in fkCans:
         for ent in data['cluster']['entities']:
             f = None
@@ -142,7 +141,15 @@ def get_abstract_schema(clusters,tables,relationships):
                 if t['name'] == rel['to']:
                     curr_to = t['table_id']
             if curr_from and curr_to:
-                e['relationships'].append({'from':curr_from,'to':curr_to})
+                relExists = False
+                for e_rel in e["relationships"]:
+                    if (e_rel["from"] == curr_from and e_rel["to"] == curr_to) or (e_rel["from"] == curr_to and e_rel["to"] == curr_from):
+                        relExists = True
+                        break
+                if not relExists:
+                    e['relationships'].append({'from':curr_from,'to':curr_to})
+                break
+                
     return(abstract_schema)
         
 
