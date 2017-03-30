@@ -1,19 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
 	<script type="text/javascript">
-		window.onload = function() {
-			var dialog = document.querySelector('dialog');
-			var showDialogButton = document.querySelector('#show-dialog');
-			if (! dialog.showModal) {
-				dialogPolyfill.registerDialog(dialog);
-			}
-			showDialogButton.addEventListener('click', function() {
-				dialog.showModal();
-			});
-			dialog.querySelector('.close').addEventListener('click', function() {
-				dialog.close();
-			});		
-		};
 		function editProject(button, name, project_id) {
 			console.log(name);
 			if(button.childNodes[1].innerHTML == 'mode_edit') {
@@ -56,7 +43,7 @@
 			<h1>Projects</h1>
 		    </div>
 		    <div class="col-sm-3">
-			<button id="show-dialog" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="margin: 30px 0;">
+			<button id="myModal" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" data-toggle="modal" data-target="#add-project-modal" style="margin: 30px 0;">
 			    <i class="material-icons">add</i>
 			</button>
 		    </div>
@@ -105,56 +92,7 @@
 				</table>
 		    	</div>
 		</div>
-        </div>
-	<dialog class="mdl-dialog" id="add-project">
-		<h4 class="mdl-dialog__title">Add Database</h4>
-		<div class="mdl-dialog__content">
-			<form action='{{ request.path }}' method=post>
-			    	<div class="form-group">
-					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					    <input class="mdl-textfield__input" type="text" name="project_name">
-					    <label class="mdl-textfield__label" for="project_name">Project Name</label>
-					</div>
-				</div>
-			    	<div class="form-group">
-					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					    <input class="mdl-textfield__input" type="text" name="db_name">
-					    <label class="mdl-textfield__label" for="db_name">Database Name</label>
-					</div>
-				</div>
-			    	<div class="form-group">
-					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-				    		<input class="mdl-textfield__input" type="text" name="username">
-				    		<label class="mdl-textfield__label" for="username">User</label>
-					</div>
-				</div>
-			    	<div class="form-group">
-					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					    <input class="mdl-textfield__input" type="password" name="password">
-					    <label class="mdl-textfield__label" for="password">Password</label>
-					</div>
-				</div>
-			    	<div class="form-group">
-					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					    <input class="mdl-textfield__input" type="text" name="host">
-					    <label class="mdl-textfield__label" for="host">Host</label>
-					</div>
-				</div>
-			    	<div class="form-group">
-					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" name="port">
-					    <label class="mdl-textfield__label" for="port">Port</label>
-					    <span class="mdl-textfield__error">Input is not a number!</span>
-					</div>
-				</div>
-				<div class="mdl-dialog__actions">
-		    			<button type="submit" class="mdl-button" name="save-project-button">Agree</button>
-		    			<button type="button" class="mdl-button close">Disagree</button>
-				</div>
-		    	</form>
-		</div>
-	</dialog>	
-    
+    </div>
     <div class="modal fade" id="add-project-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     	<div class="modal-dialog" role="document">
         	<div class="modal-content">
@@ -207,6 +145,12 @@
 								<div class="form-group">
 									<label for="port">Port</label>
 									<input type="text" class="form-control" name="port" value="3306">
+								</div>
+							</div>
+							<div class="col-xs-10 col-xs-offset-1">
+								<div class="form-group">
+									<label for="port">Java Directory</label>
+									<input type="text" class="form-control" name="java_directory">
 								</div>
 							</div>
 						</div>
