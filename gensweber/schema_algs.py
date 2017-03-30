@@ -365,11 +365,13 @@ def get_foreign_key_candidates(directory):
         referenced_table_name = class_table_map.get(foreign_key_candidate["referenced_table_class"], None)
         if referenced_table_name:
             foreign_key_candidate["referenced_table_name"] = referenced_table_name
-        elif DEBUG:
-            print "Could not find table name for class {}".format(foreign_key_candidate["referenced_table_class"]) 
-            if VERBOSE:
-                print foreign_key_candidate
-                print ""
+        else:
+            foreign_key_candidate["referenced_table_name"] = foreign_key_candidate["referenced_table_class"].split('.')[-1].lower()
+            if DEBUG:
+                print "Could not find table name for class {}. Using {}.".format(foreign_key_candidate["referenced_table_class"], foreign_key_candidate["referenced_table_name"]) 
+                if VERBOSE:
+                    print foreign_key_candidate
+                    print ""
 
     if DEBUG:
         print [foreign_key for foreign_key in foreign_key_candidates if foreign_key["referenced_table_name"]]
