@@ -2,14 +2,25 @@
 {% block body %}
 	<script type="text/javascript">
 		function editProject(button, name, project_id) {
-			console.log(name);
+			var rowIndex = button.parentNode.parentNode.rowIndex;
 			if(button.childNodes[1].innerHTML == 'mode_edit') {
-				button.parentNode.contentEditable = true;
-				button.childNodes[1].innerHTML = 'done';	
+				document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].removeAttribute('href');
+				document.getElementById("table").rows[rowIndex].cells[0].contentEditable = true;
+				button.childNodes[1].innerHTML = 'done';
+				document.getElementById('table').rows[rowIndex].cells[0].childNodes[1].style.color = "#000000";
+				document.getElementById('table').rows[rowIndex].cells[0].style.backgroundColor = "rgb(255,64,129)";	
 			}
 			else {
-				button.parentNode.contentEditable = false;
-				new_name = button.parentNode.childNodes[1].innerHTML + button.parentNode.childNodes[2].nodeValue;
+				var new_name;
+				document.getElementById("table").rows[rowIndex].cells[0].contentEditable = false;
+				if(typeof document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].innerHTML=="string") {
+					new_name=document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].innerHTML;
+				}
+				else {
+					console.log("else");
+					new_name=document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].data;
+				}
+				console.log(new_name);
 				var data = {old_name: name, new_name:new_name};
 				var dataString = JSON.stringify(data);
 				console.log(dataString);
@@ -53,10 +64,11 @@
 				Error: {{ error }}
 			{% endif %}
 			<div class="col-sm-6 col-sm-offset-3">
-				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="table">
 					<thead>
 						<tr>
 							<th class="mdl-data-table__cell--non-numeric">Project Name</th>
+							<th class="mdl-data-table__cell--non-numeric"></th>
 							<th class="mdl-data-table__cell--non-numeric">Database Name</th>
 							<th class="mdl-data-table__cell--non-numeric">Host</th>
 							<th class="mdl-data-table__cell--non-numeric">Port</th>
@@ -68,6 +80,8 @@
 							<tr>
 								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
 									<a href="{{ url_for('abstract_diagram', project_id=project['project_id']) }}">{{ project['name'] }}</a> {{ project['project_name'] }}
+								</td>
+								<td>
 									<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="editProject(this, '{{ project['name'] }}', '{{ project['project_id'] }}')">
 										<i class="material-icons">mode_edit</i>
 									</button>

@@ -10,6 +10,12 @@
 		
 
 		window.onload = function() {
+			document.getElementById('expand').onclick = function() {
+				expandAllNodes();
+			}
+			document.getElementById('collapse').onclick = function() {
+				collapseAllNodes();
+			}
 			initDiagram('schema-diagram', diagramData, editableHeader=true);
 
 			document.getElementById('save-layout-button').onclick = function() {
@@ -85,7 +91,12 @@
 				</button>
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="#" id='save-layout-button'>Save Diagram</a></li>
-					<li><a href="#" id='drill-in-button'><i class="glyphicon glyphicon-resize-full"></i> Drill In</a></li>
+					<li><a href="#" id='drill-in-button'>
+						<i class="glyphicon glyphicon-resize-full"></i> 
+							Drill In
+					</a></li>
+					<li><a href="#" id='expand'>Expand All</a></li>
+					<li><a href="#" id='collapse'>Collapse All</a></Cli>
 					<li class="dropdown">
 						<select id="layout">
 							<option value="directed">Force Directed</option>
@@ -106,13 +117,12 @@
 		</nav>
 	</div>
 	<div class="row" style="display: inline;">
-		<div class="col-md-3" style="padding: 0; margin-top: 20px;">
+		<div class="col-md-3" style="padding: 0;">
 			<div style="height:700px; overflow: scroll; border: 1px solid black;">
 				<div id="integration-list" style="width: 100%;">
 					<ul>
 						{% for entity in entities %}
 							<li>
-							
 								<table>
 									<tr>
 										<td>
