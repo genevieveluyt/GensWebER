@@ -301,6 +301,8 @@ class SchemaDiagram {
 			divId,
 			{
 				initialContentAlignment: go.Spot.Center,
+				initialAutoScale: go.Diagram.Uniform,
+				"toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
 				allowDelete: false,
 				allowCopy: false,
 				"undoManager.isEnabled": true

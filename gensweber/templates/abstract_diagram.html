@@ -39,17 +39,13 @@
 		}
 		$(function() {
 			$(".expand").on( "click", function(evt) {
-				if(evt.target.tagName === "BUTTON") {
-					return;
-				} else {
-					$(this).next().slideToggle(200);
-					var $expand = $(this).find(">:first-child");
+				$(this).next().next().slideToggle(200);
+				var $expand = $(this).find(">:first-child");
 
-					if($expand.text() == "+") {
-						$expand.text("-");
-					} else {
-						$expand.text("+");
-					}
+				if($expand.text() == "+") {
+					$expand.text("-");
+				} else {
+					$expand.text("+");
 				}
 			});
 		});
@@ -78,17 +74,17 @@
 			}			
 		}
 	</script>
-
-	<div class="container">
-		<h1>{{ project_name }}</h1>
-	</div>
 		
 	<div class="container">
-		<nav class="navbar">
+
+		<nav class="navbar" style="margin-bottom: 0">
 			<div class="container-fluid">
-				<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="float: left;" onclick="window.location.href = '{{ url_for('dashboard') }}' ">
+				<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="float: left; margin-right: 30px" onclick="window.location.href = '{{ url_for('dashboard') }}' ">
   					<i class="material-icons">keyboard_backspace</i>
 				</button>
+				<div class="navbar-header">
+        			<div class="navbar-brand">{{ project_name }}</div>
+      			</div>
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="#" id='save-layout-button'>Save Diagram</a></li>
 					<li><a href="#" id='drill-in-button'>
@@ -115,44 +111,43 @@
 				</ul>
 			</div>
 		</nav>
-	</div>
-	<div class="row" style="display: inline;">
-		<div class="col-md-3" style="padding: 0;">
-			<div style="height:700px; overflow: scroll; border: 1px solid black;">
-				<div id="integration-list" style="width: 100%;">
-					<ul>
-						{% for entity in entities %}
-							<li>
-								<table>
-									<tr>
-										<td>
-											{% if entity['visible'] == true %}
-												<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
-													<i class="material-icons">visibility</i>
-												</button>
-											{% else %}
-												<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
-													<i class="material-icons">visibility_off</i>
-												</button>
-											{% endif %}
-										</td>
-										<td>
-											<div>
-												<h2>
-													{{ entity['name'] }}
-												</h2>
-											</div>
-										</td>
-									</tr>
-								</table>
-								<a class="expand">
-									<div class="right-arrow">+</div>
-								</a>
 
-								<div class="detail">
-									<div id="right">
-										<div id="sup">
-							    				<div>
+		<div class="row" style="display: inline;">
+			<div class="col-md-3" style="padding: 0;">
+				<div style="height:400px; overflow: scroll; border: 1px solid black;">
+					<div id="integration-list" style="width: 100%;">
+						<ul>
+							{% for entity in entities %}
+								<li>
+									<table>
+										<tr>
+											<td>
+												{% if entity['visible'] == true %}
+													<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
+														<i class="material-icons">visibility</i>
+													</button>
+												{% else %}
+													<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
+														<i class="material-icons">visibility_off</i>
+													</button>
+												{% endif %}
+											</td>
+											<td>
+												<div>
+													<h2>
+														{{ entity['name'] }}
+													</h2>
+												</div>
+											</td>
+										</tr>
+										<a class="expand" style="margin-right: 20px">
+											<div class="right-arrow">+</div>
+										</a>
+									</table>
+
+									<div class="detail">
+										<div id="right">
+											<div id="sup">
 												<span>
 													<table>
 														{% for table in entity['tables'] %}
@@ -167,7 +162,6 @@
 																			<i class="material-icons">visibility_off</i>
 																		</button>
 																	{% endif %}
-																	
 																</td>
 																<td>{{ table['name'] }}</td>
 															</tr>
@@ -175,22 +169,18 @@
 													</table>
 												</span>
 												<br>
-							    				</div>
+											</div>
 										</div>
 									</div>
-								</div>
-							</li>
-						{% endfor %}
-					</ul>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="col-md-8" style="padding: 0;">
-			<div class="container">
+			<div class="col-md-9" style="padding: 0;">
 				<div id="schema-diagram"></div>
 			</div>
-		</div>
-		<div class="col-md-1">
 		</div>
 	</div>
 {% endblock %}
