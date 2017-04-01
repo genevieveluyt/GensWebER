@@ -136,7 +136,7 @@ class SchemaDiagram {
 	 * @param {string} filename - The file name that will be used for the file.
 	 */
 	exportFullDiagram(filename="diagram.png") {
-		this.exportDiagram(filename, { scale: 1 });
+		this.exportDiagram(filename, { scale: 0.75, maxSize: new go.Size(Infinity, Infinity) });
 	}
 
 	/**
