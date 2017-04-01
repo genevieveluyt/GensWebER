@@ -6,7 +6,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'flask',
-        'mysql-connector',
+        'mysql-connector==2.1.4',
         'Flask-PyMongo',
         'javalang'
     ],
