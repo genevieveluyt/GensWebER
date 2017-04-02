@@ -22,6 +22,10 @@
 				saveDiagram("{{ request.path }}");
 			}
 
+			document.getElementById('expand-button').onclick = function() {
+				expandSelection();
+			}
+
 			document.getElementById('drill-in-button').onclick = function() {
 				drillIn("{{ url_for('abstract_diagram', project_id=request.path[1:]) }}")
 			}
@@ -87,6 +91,7 @@
       			</div>
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="#" id='save-layout-button'>Save Diagram</a></li>
+					<li><a href="#" id='expand-button'>Expand</a></li>
 					<li><a href="#" id='drill-in-button'>
 						<i class="glyphicon glyphicon-resize-full"></i> 
 							Drill In
