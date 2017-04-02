@@ -17,7 +17,18 @@
 			}
 
 			document.getElementById('expand-button').onclick = function() {
-				expandSelection();
+				expandSelection(function(nodeData) {
+					var name = nodeData.name;
+					var visibilityList = document.querySelector("#integration-list > ul");
+					var visibilityListItems = visibilityList.querySelectorAll("li");
+					for (var i = 0; i < visibilityListItems.length; i++) {
+						var tr = visibilityListItems[i].querySelector("table > tbody > tr");
+						var tds = tr.querySelectorAll("td");
+						if (tds[1].querySelector("h2").innerHTML.trim() == name) {
+							tds[0].querySelector("button > i").innerHTML = "visibility";
+						}
+					}
+				});
 			}
 
 			document.getElementById('download-full-diagram').onclick = function() {
@@ -51,24 +62,20 @@
 			if(button.childNodes[1].innerHTML == 'visibility') {
 				setNodeVisibility(key, false);
 				button.childNodes[1].innerHTML = 'visibility_off';
-				console.log(button);
 			}
 			else {
 				setNodeVisibility(key, true);
 				button.childNodes[1].innerHTML = 'visibility';
-				console.log("VISIBLE");
 			}
 		}
 		function attributeVisibility(button, name, key) {
 			if(button.childNodes[1].innerHTML == 'visibility') {
 				setRowVisibility(key, name, false);
 				button.childNodes[1].innerHTML = 'visibility_off';
-				console.log(button);
 			}
 			else {
 				setRowVisibility(key, name, true);
 				button.childNodes[1].innerHTML = 'visibility';
-				console.log("VISIBLE");
 			}			
 		}		
 	</script>

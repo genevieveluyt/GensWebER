@@ -90,8 +90,10 @@ class SchemaDiagram {
 
 	/**
 	 * Show all nodes that are linked to currently selected node.
+	 *
+	 * @param callback {function} For every node whose visibility is changed from hidden to visible, this function is called with the node's data as parameter
 	 */
-	showNeighboursOfSelectedNode() {
+	showNeighboursOfSelectedNode(callback) {
 		var diagram = this.diagram;
 		var model = diagram.model;
 
@@ -102,6 +104,9 @@ class SchemaDiagram {
 				var connectedNode = connectedNodes.value.data;
 				if (!connectedNode.visible) {
 					model.setDataProperty(connectedNode, "visible", true);
+					if (callback) {
+						callback(connectedNode);
+					}
 				}
 			}
 		}

@@ -50,8 +50,8 @@ function drillIn(baseUrl) {
 /**
  * Show neighbours of the selected node.
  */
-function expandSelection() {
-	schemaDiagram.showNeighboursOfSelectedNode();
+function expandSelection(callback=None) {
+	schemaDiagram.showNeighboursOfSelectedNode(callback);
 }
 
 /**
