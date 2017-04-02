@@ -12,6 +12,14 @@
 		window.onload = function() {
 			initDiagram('schema-diagram', diagramData, editableHeader=true);
 
+			document.getElementById('expand').onclick = function() {
+				expandAllNodes();
+			}
+
+			document.getElementById('collapse').onclick = function() {
+				collapseAllNodes();
+			}
+
 			document.getElementById('save-layout-button').onclick = function() {
 				saveDiagram("{{ request.path }}");
 			}
@@ -91,8 +99,10 @@
         			<div class="navbar-brand">{{ entity_name }}</div>
       			</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" id='save-layout-button'>Save Layout</a></li>
+					<li><a href="#" id='save-layout-button'>Save</a></li>
 					<li><a href="#" id='expand-button'>Expand</a></li>
+					<li><a href="#" id='expand'>Show Attributes</a></li>
+					<li><a href="#" id='collapse'>Hide Attributes</a></li>
 					<li class="dropdown">
 						<select id="layout">
 							<option value="directed">Force Directed</option>

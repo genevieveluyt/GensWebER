@@ -10,13 +10,15 @@
 		
 
 		window.onload = function() {
+			initDiagram('schema-diagram', diagramData, editableHeader=true);
+
 			document.getElementById('expand').onclick = function() {
 				expandAllNodes();
 			}
+
 			document.getElementById('collapse').onclick = function() {
 				collapseAllNodes();
 			}
-			initDiagram('schema-diagram', diagramData, editableHeader=true);
 
 			document.getElementById('save-layout-button').onclick = function() {
 				saveDiagram("{{ request.path }}");
@@ -97,14 +99,14 @@
         			<div class="navbar-brand">{{ project_name }}</div>
       			</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" id='save-layout-button'>Save Diagram</a></li>
+					<li><a href="#" id='save-layout-button'>Save</a></li>
 					<li><a href="#" id='expand-button'>Expand</a></li>
 					<li><a href="#" id='drill-in-button'>
 						<i class="glyphicon glyphicon-resize-full"></i> 
 							Drill In
 					</a></li>
-					<li><a href="#" id='expand'>Expand All</a></li>
-					<li><a href="#" id='collapse'>Collapse All</a></Cli>
+					<li><a href="#" id='expand'>Show Tables</a></li>
+					<li><a href="#" id='collapse'>Hide Tables</a></li>
 					<li class="dropdown">
 						<select id="layout">
 							<option value="directed">Force Directed</option>
