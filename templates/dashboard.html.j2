@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout.html.j2" %}
 {% block body %}
 	<script type="text/javascript">
 		function editProject(button, name, project_id) {
@@ -48,27 +48,33 @@
 			})
 		}
 	</script>
+
+	{% if error %}
+		<div class="error-container">
+			<div class="error">
+				Error: {{ error }}
+			</div>
+		</div>
+	{% endif %}
+
 	<div class="container">
 		<div class="row">
-		    <div class="col-sm-6 col-sm-offset-3">
-			<h1>Projects</h1>
+		    <div class="col-xs-8 col-lg-6 col-lg-offset-2">
+				<h1>Projects</h1>
 		    </div>
-		    <div class="col-sm-3">
-			<button id="myModal" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" data-toggle="modal" data-target="#add-project-modal" style="margin: 30px 0;">
-			    <i class="material-icons">add</i>
-			</button>
+		    <div class="col-xs-4 col-lg-2 text-right">
+				<button id="myModal" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" data-toggle="modal" data-target="#add-project-modal" style="margin: 30px 0;">
+					<i class="material-icons">add</i>
+				</button>
 		    </div>
 		</div>
 		<div class="row">
-			{% if error %}
-				Error: {{ error }}
-			{% endif %}
-			<div class="col-sm-6 col-sm-offset-3">
+			<div class="col-lg-8 col-lg-offset-2">
 				<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="table">
 					<thead>
 						<tr>
 							<th class="mdl-data-table__cell--non-numeric">Project Name</th>
-							<th class="mdl-data-table__cell--non-numeric"></th>
+							<th class="mdl-data-table__cell--non-numeric" hidden></th>
 							<th class="mdl-data-table__cell--non-numeric">Database Name</th>
 							<th class="mdl-data-table__cell--non-numeric">Host</th>
 							<th class="mdl-data-table__cell--non-numeric">Port</th>
@@ -81,7 +87,7 @@
 								<td class="mdl-data-table__cell--non-numeric" project-id='{{ project["project_id"] }}' >
 									<a href="{{ url_for('abstract_diagram', project_id=project['project_id']) }}">{{ project['name'] }}</a> {{ project['project_name'] }}
 								</td>
-								<td>
+								<td hidden>
 									<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="editProject(this, '{{ project['name'] }}', '{{ project['project_id'] }}')">
 										<i class="material-icons">mode_edit</i>
 									</button>
@@ -116,41 +122,25 @@
           		</div>
           		<div class="modal-body">
             		<form id='add-project-form' action='{{ request.path }}' method=post>
-            			<div class="row">
-            				<div class="col-xs-10 col-xs-offset-1">
-								<div class="form-group">
-									<label for="project_name">Project Name</label>
-									<input type="text" class="form-control" name="project_name">
-								</div>
+							<div class="form-group">
+								<label for="project_name">Project Name</label>
+								<input type="text" class="form-control" name="project_name">
 							</div>
-						</div>
 						</br>
-						<div class="row">
-            				<div class="col-xs-10 col-xs-offset-1">
-								<div class="form-group">
-									<label for="db_name">Database Name</label>
-									<input type="text" class="form-control" name="db_name">
-								</div>
-							</div>
+						<div class="form-group">
+							<label for="db_name">Database Name</label>
+							<input type="text" class="form-control" name="db_name">
+						</div>
+						<div class="form-group">
+							<label for="username">Username</label>
+							<input type="text" class="form-control" name="username">
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input type="password" class="form-control" name="password">
 						</div>
 						<div class="row">
-            				<div class="col-xs-10 col-xs-offset-1">
-								<div class="form-group">
-									<label for="username">Username</label>
-									<input type="text" class="form-control" name="username">
-								</div>
-							</div>
-						</div>
-						<div class="row">
-            				<div class="col-xs-10 col-xs-offset-1">
-								<div class="form-group">
-									<label for="password">Password</label>
-									<input type="password" class="form-control" name="password">
-								</div>
-							</div>
-						</div>
-						<div class="row">
-            				<div class="col-xs-6 col-xs-offset-1">
+            				<div class="col-xs-8">
 								<div class="form-group">
 									<label for="host">Host</label>
 									<input type="text" class="form-control" name="host">
@@ -162,15 +152,16 @@
 									<input type="text" class="form-control" name="port">
 								</div>
 							</div>
-							<div class="col-xs-10 col-xs-offset-1">
-								<div class="form-group">
-									<label for="port">Java Directory</label>
-									<input type="text" class="form-control" name="java_directory" hidden>
-								</div>
-							</div>
 						</div>
+						<div class="form-group" hidden>
+							<label for="port">Java Directory</label>
+							<input type="text" class="form-control" name="java_directory">
+						</div>
+						</br>
+						<div class="text-right">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	            			<input type="submit" id="save-project-button" class="btn btn-primary" value="Save changes">
+							<input type="submit" id="save-project-button" class="btn btn-primary" value="Save changes">
+						</div>
 					</form>
           		</div>
         	</div>

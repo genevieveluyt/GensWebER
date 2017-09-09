@@ -2,6 +2,7 @@
 Visualize the database schema of any online database as a high-level abstract entity-relationship (ER) diagram.
 
 ## Setup
+This only needs to be done once
 1. Install MongoDB Community Edition
 2. Install MySQL
 3. Clone this repo
@@ -12,7 +13,7 @@ git clone https://github.com/genevieveluyt/GensWebER.git
 ```
 cd GensWebER
 ```
-5. (Optional but recommended) Create a virtual environment
+5. (Optional but recommended) Create a virtual environment with Python 3
 6. Install the Python dependencies
 ```
 pip install -r requirements.txt

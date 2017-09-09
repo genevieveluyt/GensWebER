@@ -6,18 +6,52 @@
     box-sizing: border-box;
 }
 
+#add-project-modal .modal-body {
+    padding: 30px 50px 50px 50px;
+}
+
+#save-project-button {
+    margin-left: 15px;
+}
+
+#table {
+    width: 100%;
+}
+
 #schema-diagram {
 	background-color: white;
-	border: solid 1px black;
+	border: solid 1px lightgrey;
 	width: 100%;
-	height: 400px;
+	height: calc(100vh - 200px);
+}
+
+#layout {
+    background: none;
+    border: none;
+    color: rgb(255,64,129);
+    padding: 15px;
+}
+
+#layout:hover,
+#layout:focus {
+    background-color: #eee;
+    color: #23527c;
+    cursor: pointer;
+    outline: none;
+}
+
+#integration-list-container {
+    height: calc(100vh - 200px);
+    overflow-y: scroll;
+    border: 1px solid lightgrey;
 }
 
 #integration-list {
     font-family: 'Open Sans', sans-serif;
-    display: table;
+    word-break: break-all;
 }
 #integration-list ul {
+    font-size: 17px;
     padding: 0;
     color: #555;
 }
@@ -37,28 +71,34 @@
 #integration-list .material-icons {
     font-size: 18px;
 }
+
+#left, #right {
+    display: table;
+}
+
+#sup {
+    display: table-cell;
+    vertical-align: middle;
+    width: 80%;
+}
+
+.list-head td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
 .expand {
     display: block;
     text-decoration: none;
     color: #555;
     cursor: pointer;
 }
-h2 {
-    padding: 0;
-    margin: 0;
-    font-size: 17px;
-    font-weight: 400;
-}
-span {
+
+.detail {
     font-size: 12.5px;
-}
-#left,#right{
-    display: table;
-}
-#sup{
-    display: table-cell;
-    vertical-align: middle;
-    width: 80%;
+    margin: 10px 0 10px 0px;
+    display: none;
+    line-height: 22px;
 }
 .detail a {
     text-decoration: none;
@@ -67,14 +107,10 @@ span {
     padding: 6px 10px 5px;
     font-size: 14px;
 }
-.detail {
-    margin: 10px 0 10px 0px;
-    display: none;
-    line-height: 22px;
+.detail table td:not(:first-of-type) {
+    padding-right: 10px;
 }
-.detail span{
-    margin: 0;
-}
+
 .right-arrow {
     margin-top: 12px;
     margin-left: 20px;
@@ -84,21 +120,26 @@ span {
     font-weight: bold;
     font-size: 20px;
 }
+
 .icon {
     height: 75px;
     width: 75px;
     float: left;
     margin: 0 15px 0 0;
 }
-.london {
-    background: url("http://placehold.it/50x50") top left no-repeat;
-    background-size: cover;
+
+.error-container {
+    bottom: 40px;
+    position: fixed;
+    text-align: center;
+    width: 100%;
 }
-.newyork {
-    background: url("http://placehold.it/50x50") top left no-repeat;
-    background-size: cover;
-}
-.paris {
-    background: url("http://placehold.it/50x50") top left no-repeat;
-    background-size: cover;
+.error-container .error {
+    background: #323232;
+    border-radius: 2px;
+    color: #fff;
+    display: inline-block;
+    max-width: 568px;
+    min-width: 288px;
+    padding: 20px;
 }

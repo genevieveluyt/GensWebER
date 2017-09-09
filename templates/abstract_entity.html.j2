@@ -1,0 +1,178 @@
+{% extends "layout.html.j2" %}
+{% block body %}
+
+	<!-- Local files -->
+	<script src="{{ url_for('static', filename='schema_diagram.js') }}"></script>
+	<script src="{{ url_for('static', filename='diagram_helpers.js') }}"></script>
+	<script type="text/javascript">
+		var entityName = {{ entity_name | tojson }}
+		var diagramData = {{ diagram_data | tojson }}
+		var tables = {{ tables | tojson }};
+
+		window.onload = function() {
+			initDiagram('schema-diagram', diagramData, editableHeader=true);
+
+			document.getElementById('expand').onclick = function() {
+				expandAllNodes();
+			}
+
+			document.getElementById('collapse').onclick = function() {
+				collapseAllNodes();
+			}
+
+			document.getElementById('save-layout-button').onclick = function() {
+				saveDiagram("{{ request.path }}");
+			}
+
+			document.getElementById('expand-button').onclick = function() {
+				expandSelection(function(nodeData) {
+					var name = nodeData.name;
+					var visibilityList = document.querySelector("#integration-list > ul");
+					var visibilityListItems = visibilityList.querySelectorAll("li");
+					for (var i = 0; i < visibilityListItems.length; i++) {
+						var tr = visibilityListItems[i].querySelector("table > tbody > tr");
+						var tds = tr.querySelectorAll("td");
+						if (tds[1].querySelector("h2").innerHTML.trim() == name) {
+							tds[0].querySelector("button > i").innerHTML = "visibility";
+						}
+					}
+				});
+			}
+
+			document.getElementById('download-full-diagram').onclick = function() {
+				exportFullDiagram("{{ project_name }}" + ".png");
+			}
+
+			document.getElementById('download-visible-diagram').onclick = function() {
+				exportVisibleDiagram("{{ project_name }}" + ".png");
+			}
+
+			var layoutDropdown = document.getElementById('layout');
+			bindLayoutDropdown(layoutDropdown);
+		}
+		$(function() {
+			$(".expand").on( "click", function(evt) {
+				if(evt.target.tagName === "BUTTON") {
+					return;
+				} else {
+					$(this).next().next().slideToggle(200);
+					var $expand = $(this).find(">:first-child");
+
+					if($expand.text() == "+") {
+						$expand.text("-");
+					} else {
+						$expand.text("+");
+					}
+				}
+			});
+		});
+		function visibility(button, key) {
+			if(button.childNodes[1].innerHTML == 'visibility') {
+				setNodeVisibility(key, false);
+				button.childNodes[1].innerHTML = 'visibility_off';
+			}
+			else {
+				setNodeVisibility(key, true);
+				button.childNodes[1].innerHTML = 'visibility';
+			}
+		}
+		function attributeVisibility(button, name, key) {
+			if(button.childNodes[1].innerHTML == 'visibility') {
+				setRowVisibility(key, name, false);
+				button.childNodes[1].innerHTML = 'visibility_off';
+			}
+			else {
+				setRowVisibility(key, name, true);
+				button.childNodes[1].innerHTML = 'visibility';
+			}			
+		}		
+	</script>
+		
+	<div class="container">
+
+		<nav class="navbar">
+			<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="float: left; margin-right: 30px" onclick="window.location.href = '{{ url_for('abstract_diagram', project_id=project_id) }}' ">
+				<i class="material-icons">keyboard_backspace</i>
+			</button>
+			<div class="navbar-header">
+				<div class="navbar-brand">{{ entity_name }}</div>
+			</div>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#" id='save-layout-button'>Save</a></li>
+				<li><a href="#" id='expand-button'>Expand</a></li>
+				<li><a href="#" id='expand'>Show Attributes</a></li>
+				<li><a href="#" id='collapse'>Hide Attributes</a></li>
+				<li class="dropdown">
+					<select id="layout">
+						<option value="directed">Force Directed</option>
+						<option value="circular">Circular</option>
+						<option value="grid">Grid</option>
+						<option value="digraph">Layered Digraph</option>
+					</select>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-save"></i> Download<span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#" id='download-full-diagram'>Full Diagram</a></li>
+						<li><a href="#" id='download-visible-diagram'>Visible Diagram</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+
+		<div class="row">
+			<div class="col-md-3" style="padding: 0;">
+				<div id="integration-list-container">
+					<div id="integration-list">
+						<ul>
+							{% for table in tables %}
+								<li>
+									<table class="list-head">
+										<tr>
+											<td>
+												<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ table['key'] }})">
+													<i class="material-icons">{{ 'visibility' if table['visible'] else 'visibility_off' }}</i>
+												</button>
+											</td>
+											<td>
+												{{ table['name'] }}
+											</td>
+										</tr>
+										<a class="expand" style="margin-right: 20px">
+											<div class="right-arrow">+</div>
+										</a>
+									</table>
+
+									<div class="detail">
+										<div id="right">
+											<div id="sup">
+												<table>
+													{% for item in table['primary_keys'] + table['attributes'] + table['foreign_keys'] %}
+														<tr>
+															<td>
+																<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="attributeVisibility(this, '{{ item['name'] }}', {{ item['key'] }})">
+																	<i class="material-icons">{{ 'visibility' if item['visible'] else 'visibility_off' }}</i>
+																</button>
+															</td>
+															<td>{{ item['name'] }}</td>
+														</tr>
+													{% endfor %}
+												</table>
+												<br>
+											</div>
+										</div>
+									</div>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9" style="padding: 0;">
+				<div id="schema-diagram"></div>
+			</div>
+		</div>
+
+	</div>
+
+{% endblock %}

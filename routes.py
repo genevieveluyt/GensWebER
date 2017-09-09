@@ -40,7 +40,7 @@ def dashboard():
 
     projects = db.get_projects(username)
 
-    return render_template('dashboard.html', projects=projects, error=error)
+    return render_template('dashboard.html.j2', projects=projects, error=error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -58,7 +58,7 @@ def login():
         else:
             # username exists but login failed so must be incorrect password
             error = 'Invalid password'
-    return render_template('login.html', error=error) 
+    return render_template('login.html.j2', error=error) 
 
 @app.route('/new_account', methods=['GET', 'POST'])
 def new_account():
@@ -76,7 +76,7 @@ def new_account():
             return redirect(url_for('dashboard')) 
     # Uses the same template as login
     # Changes from login are determined by the url in the template itself
-    return render_template('login.html', error=error)
+    return render_template('login.html.j2', error=error)
 
 @app.route('/logout')
 def logout():
@@ -101,7 +101,7 @@ def abstract_diagram(project_id):
     project_name = db.get_project_details(username, project_id).get('name')
     diagram_data, entities = db.get_abstract_schema(username, project_id)
 
-    return render_template('abstract_diagram.html', project_name=project_name, diagram_data=diagram_data, entities=entities)
+    return render_template('abstract_diagram.html.j2', project_name=project_name, diagram_data=diagram_data, entities=entities)
 
 @app.route('/<project_id>/<entity_id>', methods=['GET', 'POST'])
 def abstract_entity(project_id, entity_id):
@@ -116,4 +116,4 @@ def abstract_entity(project_id, entity_id):
     entity_name = db.get_abstract_entity_name(username, project_id, entity_id)
     diagram_data, tables = db.get_abstract_entity(username, project_id, entity_id)
 
-    return render_template('abstract_entity.html', entity_name=entity_name, diagram_data=diagram_data, tables=tables, project_id=project_id)
+    return render_template('abstract_entity.html.j2', entity_name=entity_name, diagram_data=diagram_data, tables=tables, project_id=project_id)

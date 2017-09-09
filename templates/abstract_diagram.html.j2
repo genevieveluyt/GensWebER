@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout.html.j2" %}
 {% block body %}
 	<!-- Local files -->
 	<script src="{{ url_for('static', filename='schema_diagram.js') }}"></script>
@@ -89,67 +89,56 @@
 	</script>
 		
 	<div class="container">
-
-		<nav class="navbar" style="margin-bottom: 0">
-			<div class="container-fluid">
-				<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="float: left; margin-right: 30px" onclick="window.location.href = '{{ url_for('dashboard') }}' ">
-  					<i class="material-icons">keyboard_backspace</i>
-				</button>
-				<div class="navbar-header">
-        			<div class="navbar-brand">{{ project_name }}</div>
-      			</div>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" id='save-layout-button'>Save</a></li>
-					<li><a href="#" id='expand-button'>Expand</a></li>
-					<li><a href="#" id='drill-in-button'>
-						<i class="glyphicon glyphicon-resize-full"></i> 
-							Drill In
-					</a></li>
-					<li><a href="#" id='expand'>Show Tables</a></li>
-					<li><a href="#" id='collapse'>Hide Tables</a></li>
-					<li class="dropdown">
-						<select id="layout">
-							<option value="directed">Force Directed</option>
-							<option value="circular">Circular</option>
-							<option value="grid">Grid</option>
-							<option value="digraph">Layered Digraph</option>
-						</select>
-					</li>
-					<li class="dropdown">
-			            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-save"></i> Download<span class="caret"></span></a>
-					    <ul class="dropdown-menu">
-					        <li><a href="#" id='download-full-diagram'>Full Diagram</a></li>
-					        <li><a href="#" id='download-visible-diagram'>Visible Diagram</a></li>
-					    </ul>
-					</li>
-				</ul>
+		<nav class="navbar">
+			<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" style="float: left; margin-right: 30px" onclick="window.location.href = '{{ url_for('dashboard') }}' ">
+				<i class="material-icons">keyboard_backspace</i>
+			</button>
+			<div class="navbar-header">
+				<div class="navbar-brand">{{ project_name }}</div>
 			</div>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#" id='save-layout-button'>Save</a></li>
+				<li><a href="#" id='expand-button'>Expand</a></li>
+				<li><a href="#" id='drill-in-button'>
+					<i class="glyphicon glyphicon-resize-full"></i> 
+						Drill In
+				</a></li>
+				<li><a href="#" id='expand'>Show Tables</a></li>
+				<li><a href="#" id='collapse'>Hide Tables</a></li>
+				<li>
+					<select id="layout">
+						<option value="directed">Force Directed</option>
+						<option value="circular">Circular</option>
+						<option value="grid">Grid</option>
+						<option value="digraph">Layered Digraph</option>
+					</select>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-save"></i> Download <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="#" id='download-full-diagram'>Full Diagram</a></li>
+						<li><a href="#" id='download-visible-diagram'>Visible Diagram</a></li>
+					</ul>
+				</li>
+			</ul>
 		</nav>
 
-		<div class="row" style="display: inline;">
+		<div class="row">
 			<div class="col-md-3" style="padding: 0;">
-				<div style="height:400px; overflow: scroll; border: 1px solid black;">
+				<div id="integration-list-container">
 					<div id="integration-list" style="width: 100%;">
 						<ul>
 							{% for entity in entities %}
 								<li>
-									<table>
+									<table class="list-head">
 										<tr>
 											<td>
-												{% if entity['visible'] == true %}
-													<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
-														<i class="material-icons">visibility</i>
-													</button>
-												{% else %}
-													<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
-														<i class="material-icons">visibility_off</i>
-													</button>
-												{% endif %}
+												<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onclick="visibility(this, {{ entity['key'] }})">
+													<i class="material-icons">{{ 'visibility' if entity['visible'] else 'visibility_off' }}</i>
+												</button>
 											</td>
 											<td>
-												<h2>
-													{{ entity['name'] }}
-												</h2>
+												{{ entity['name'] }}
 											</td>
 										</tr>
 										<a class="expand" style="margin-right: 20px">
@@ -160,26 +149,18 @@
 									<div class="detail">
 										<div id="right">
 											<div id="sup">
-												<span>
-													<table>
-														{% for table in entity['tables'] %}
-															<tr>
-																<td>
-																	{% if table['visible'] == true %}
-																		<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="attributeVisibility(this, '{{ table['name'] }}', {{ entity['key'] }})">
-																			<i class="material-icons">visibility</i>
-																		</button>
-																	{% else %}
-																		<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="attributeVisibility(this, '{{ table['name'] }}', {{ entity['key'] }})">
-																			<i class="material-icons">visibility_off</i>
-																		</button>
-																	{% endif %}
-																</td>
-																<td>{{ table['name'] }}</td>
-															</tr>
-														{% endfor %}
-													</table>
-												</span>
+												<table>
+													{% for table in entity['tables'] %}
+														<tr>
+															<td>
+																<button class="mdl-button mdl-js-button mdl-js-ripple-effect" onclick="attributeVisibility(this, '{{ table['name'] }}', {{ entity['key'] }})">
+																	<i class="material-icons">{{ 'visibility' if table['visible'] else 'visibility_off' }}</i>
+																</button>
+															</td>
+															<td>{{ table['name'] }}</td>
+														</tr>
+													{% endfor %}
+												</table>
 												<br>
 											</div>
 										</div>
