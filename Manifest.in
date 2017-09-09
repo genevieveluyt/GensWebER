@@ -1,3 +1,0 @@
-graft GensWebER/templates
-graft GensWebER/static
-include GensWebER/schema.sql

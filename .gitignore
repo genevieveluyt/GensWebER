@@ -1,7 +1,6 @@
 .DS_Store
 *.pyc
 *.pyo
-venv
 *.egg
 *.egg-info
 .tox

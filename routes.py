@@ -1,24 +1,8 @@
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash, jsonify
-from flask_pymongo import PyMongo
 import json
+from flask import request, session, redirect, url_for, render_template
 
-from db_interface import db_interface
-import schema_algs
-
-app = Flask(__name__) # create the application instance :)
-app.config.from_object(__name__) # load config from this file , gensweber.py
-
-# Load default config and override config from an environment variable
-app.config.update(dict(
-    MONGO_DBNAME='gensweber',
-    SECRET_KEY='development key'
-))
-app.config.from_envvar('GENSWEBER_SETTINGS', silent=True)
-
-db = None
-with app.app_context():
-    db = db_interface(app)
+import gensweber.helpers.schema_algs as schema_algs
+from . import app, db
 
 
 @app.route("/", methods=['GET', 'POST'])

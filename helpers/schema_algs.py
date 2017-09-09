@@ -268,9 +268,9 @@ def get_foreign_key_candidates(directory):
                 imports = [import_statement.path for import_statement in java_tree.imports]
 
                 if DEBUG and VERBOSE:
-                    print "File name: {}".format(filename)
-                    print "Package: {}".format(package_name)
-                    print "Imports: {}".format(imports)
+                    print("File name: {}".format(filename))
+                    print("Package: {}".format(package_name))
+                    print("Imports: {}".format(imports))
 
                 for path, class_node in java_tree.filter(javalang.tree.ClassDeclaration):
                     if package_name:
@@ -285,7 +285,7 @@ def get_foreign_key_candidates(directory):
                                 if name_val.name == "name":
                                     table_name = name_val.value.value[1:-1]
                                     if DEBUG and class_name in class_table_map:
-                                        print ("{} already mapped to a table...".format(class_name))
+                                        print("{} already mapped to a table...".format(class_name))
                                     class_table_map[class_name] = table_name            
                     
                     if not table_name:
@@ -360,7 +360,7 @@ def get_foreign_key_candidates(directory):
             if class_in_package:
                 foreign_key_candidate["referenced_table_class"] = "{}.{}".format(package_name, local_referenced_table_class)
             elif DEBUG:
-                print "Could not find absolute class name for {} in class {}".format(local_referenced_table_class, foreign_key_candidate["class_name"])
+                print("Could not find absolute class name for {} in class {}".format(local_referenced_table_class, foreign_key_candidate["class_name"]))
 
         referenced_table_name = class_table_map.get(foreign_key_candidate["referenced_table_class"], None)
         if referenced_table_name:
@@ -368,11 +368,11 @@ def get_foreign_key_candidates(directory):
         else:
             foreign_key_candidate["referenced_table_name"] = foreign_key_candidate["referenced_table_class"].split('.')[-1].lower()
             if DEBUG:
-                print "Could not find table name for class {}. Using {}.".format(foreign_key_candidate["referenced_table_class"], foreign_key_candidate["referenced_table_name"]) 
+                print("Could not find table name for class {}. Using {}.".format(foreign_key_candidate["referenced_table_class"], foreign_key_candidate["referenced_table_name"])) 
                 if VERBOSE:
-                    print foreign_key_candidate
-                    print ""
+                    print(foreign_key_candidate)
+                    print()
 
     if DEBUG:
-        print [foreign_key for foreign_key in foreign_key_candidates if foreign_key["referenced_table_name"]]
+        print([foreign_key for foreign_key in foreign_key_candidates if foreign_key["referenced_table_name"]])
     return [foreign_key for foreign_key in foreign_key_candidates if foreign_key["referenced_table_name"]]

@@ -1,53 +1,29 @@
-#Milestone 1: Gen's Web-ER
+# Gen's Web-ER
+Visualize the database schema of any online database as a high-level abstract entity-relationship (ER) diagram.
 
-##DEV Instructions
-
-###Setup
-
-1. Create a virtual environment. We don't want to mess up the Python installation used by the operating system.
-```sudo pip install virtualenv```
-In the root directory of gensweber:
-```virtualenv venv```
-This creates a folder called venv which contains a separate Python installation (like how Node uses node_modules).
-Activate the environment:
-```source venv/bin/activate```
-Any packages you install now using pip only exist in this virtual environment. You can tell you're in a virtual environment because the command line prompt starts with `(<virtual environment name>)`, in this case `(venv) oscar14@oscar14-VirtualBox:`
-To deactivate the virtual environment when you're done working on the project just type `deactivate`. The virtual environment has to be reactivated every time you open a command line window.
-
-2. Install this Python package and its dependencies in the virtual environment
-In the root directory:
-```$ pip install --editable .```
-
-3. Install MongoDB
+## Setup
+1. Install MongoDB Community Edition
+2. Install MySQL
+3. Clone this repo
 ```
-sudo apt-get install mongodb-server
-sudo apt-get install mongodb-clients
+git clone https://github.com/genevieveluyt/GensWebER.git
+```
+4. Navigate into the project
+```
+cd GensWebER
+```
+5. (Optional but recommended) Create a virtual environment
+6. Install the Python dependencies
+```
+pip install -r requirements.txt
 ```
 
-###Running the application
-Activate the virtual environment if it is not currently active
-```source venv/bin/activate```
-
-In the root directory:
-```
-$ export FLASK_APP=gensweber
-$ export FLASK_DEBUG=true
-$ PYTHONPATH=<path to app root folder> flask run
-```
-
-##Instructions
-
-1. Make sure Python 2 and MongoDB are installed
-
-2. Install this Python package
-In the root directory gensweber:
-```$ pip install .```
-
+## Running the Application
+1. Start the MongoDB server
+2. Start the MySQL service
 3. Run the application
 ```
-$ export FLASK_APP=gensweber
-$ PYTHONPATH=<path to app root folder> flask run
+export FLASK_APP=app.py
+flask run
 ```
-
-4. Open the browser application
-Navigate to http://127.0.0.1:5000/ in either Firefox (V45 or higher) or Google Chrome (V49.0 or higher).
+4. Navigate to http://localhost:5000 or http://127.0.0.1:5000 in a browser. Works best on Firefox (V45 or higher) or Google Chrome (V49.0 or higher).
