@@ -1,11 +1,3 @@
-*,
-*:before,
-*:after {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
 #add-project-modal .modal-body {
     padding: 30px 50px 50px 50px;
 }

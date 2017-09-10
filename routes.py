@@ -85,8 +85,6 @@ def logout():
 
 @app.route('/<project_id>', methods=['GET', 'POST', 'DELETE'])
 def abstract_diagram(project_id):
-    print(project_id)
-    print(request.method)
     username = session.get('logged_in_username')
     if not username:
         return redirect(url_for('login'))
