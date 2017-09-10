@@ -1,4 +1,3 @@
-from flask import Flask, session
 import json
 
 class db_interface:
@@ -21,6 +20,18 @@ class db_interface:
             'project_id_counter': 0
         })
         print("Account created for " + username + ".")
+
+    def update_username(self, old_username, new_username):
+        self.db.users.find_one_and_update(
+            {
+                'username': old_username
+            },
+            {
+                '$set': {
+                    'username': new_username
+                }
+            }
+        )
 
     def validate_login(self, username, password):
         """Returns true if an account exists with the given username and password, else false."""

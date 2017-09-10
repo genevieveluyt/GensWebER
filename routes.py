@@ -14,9 +14,10 @@ def dashboard():
     error = None
 
     if request.method == 'POST':
-
-        # If user created a new project
-        if request.form:
+        if username == 'demo':
+            error = 'Create an account to add or edit projects'
+        elif request.form:
+            # If user created a new project
             project_name = request.form['project_name']
             db_name = request.form['db_name']
             db_user = request.form['username']
@@ -83,6 +84,11 @@ def logout():
     session.pop('logged_in_username', None)
     return redirect(url_for('login'))
 
+@app.route('/demo')
+def demo():
+    session['logged_in_username'] = 'demo'
+    return redirect(url_for('dashboard'))
+
 @app.route('/<project_id>', methods=['GET', 'POST', 'DELETE'])
 def abstract_diagram(project_id):
     username = session.get('logged_in_username')
@@ -90,11 +96,17 @@ def abstract_diagram(project_id):
         return redirect(url_for('login'))
 
     if request.method == 'POST':
+        if username == 'demo':
+            return "Create an account to edit projects", 401
+
         db.save_abstract_schema(username, project_id, json.dumps(request.json))
         return ""
     elif request.method == 'DELETE':
+        if username == 'demo':
+            return "Create an account to delete projects", 401
+
         db.delete_project(username, project_id)
-        return "200"
+        return ""
 
     project_name = db.get_project_details(username, project_id).get('name')
     diagram_data, entities = db.get_abstract_schema(username, project_id)
@@ -108,6 +120,9 @@ def abstract_entity(project_id, entity_id):
         return redirect(url_for('login'))
 
     if request.method == 'POST':
+        if username == 'demo':
+            return "Create an account to edit projects", 401
+
         db.save_abstract_entity(username, project_id, entity_id, json.dumps(request.json))
         return ""
 
@@ -115,3 +130,32 @@ def abstract_entity(project_id, entity_id):
     diagram_data, tables = db.get_abstract_entity(username, project_id, entity_id)
 
     return render_template('abstract_entity.html.j2', entity_name=entity_name, diagram_data=diagram_data, tables=tables, project_id=project_id)
+
+# Run this the first time the app is run to initialize the demo projects
+def load_demo_projects(username='demo'):
+    db.create_user(username, 'demo_password')
+
+    demo_dbs = [
+        {
+            'project_name': 'Demo 1',
+            'db_name': 'aedes_aegypti_core_48_1b',
+            'db_user': 'anonymous',
+            # 'db_pass': '',
+            'host': 'ensembldb.ensembl.org',
+            'port': '3306'
+        },
+        {
+            'project_name': 'Demo2',
+            'db_name': 'anas_platyrhynchos_core_73_1',
+            'db_user': 'anonymous',
+            # 'db_pass': '',
+            'host': 'ensembldb.ensembl.org',
+            'port': '3306'
+        }
+    ]
+
+    for demo_db in demo_dbs:
+        db_schema = schema_algs.get_db_schema(demo_db.get('db_name'), demo_db.get('db_user'), demo_db.get('db_pass'), demo_db.get('host'), demo_db.get('port'), demo_db.get('java_directory'))
+        if db_schema:
+            abstract_schema = db_schema.get('cluster')
+            db.create_project(username, demo_db.get('project_name'), demo_db.get('db_name'), demo_db.get('db_user'), demo_db.get('db_pass'), demo_db.get('host'), demo_db.get('port'), abstract_schema)

@@ -13,27 +13,24 @@
 			else {
 				var new_name;
 				document.getElementById("table").rows[rowIndex].cells[0].contentEditable = false;
-				if(typeof document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].innerHTML=="string") {
+				if (typeof document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].innerHTML=="string") {
 					new_name=document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].innerHTML;
-				}
-				else {
-					console.log("else");
+				} else {
 					new_name=document.getElementById("table").rows[rowIndex].cells[0].childNodes[1].data;
 				}
-				console.log(new_name);
 				var data = {old_name: name, new_name:new_name};
 				var dataString = JSON.stringify(data);
-				console.log(dataString);
 				$.ajax({
 					url: "{{ request.path }}",
 					type: 'POST',
 					contentType: 'application/json',
 					data: dataString,
 					success: function(response) {
-						console.log(new_name);
-						console.log("Project " + project_id + " editted");
-						window.location.href = "{{ url_for('dashboard') }}"				
-					}	
+						location.reload();			
+					},
+					error: function(response) {
+						$('.notification').text(response.responseText).removeClass('hidden');
+					}
 				})
 			}
 		}
@@ -42,8 +39,10 @@
 				url: "{{ url_for('dashboard') }}" + project_id,
 				type: 'DELETE',
 				success: function(response) {
-					console.log("Deleted project");
-					window.location.href = "{{ url_for('dashboard') }}"
+					location.reload();
+				},
+				error: function(response) {
+					$('.notification').text(response.responseText).removeClass('hidden');
 				}
 			})
 		}
@@ -53,12 +52,12 @@
 		<div class="row">
 		    <div class="col-xs-8 col-lg-6 col-lg-offset-2">
 				<h1>Projects</h1>
-		    </div>
-		    <div class="col-xs-4 col-lg-2 text-right">
+			</div>
+			<div class="col-xs-4 col-lg-2 text-right">
 				<button id="myModal" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" data-toggle="modal" data-target="#add-project-modal" style="margin: 30px 0;">
 					<i class="material-icons">add</i>
 				</button>
-		    </div>
+			</div>
 		</div>
 		<div class="row">
 			<div class="col-lg-8 col-lg-offset-2">
@@ -113,7 +112,7 @@
             		<h4 class="modal-title" id="myModalLabel">Add New Project</h4>
           		</div>
           		<div class="modal-body">
-            		<form id='add-project-form' action='{{ request.path }}' method=post>
+            		<form id="add-project-form" action="{{ url_for('dashboard') }}" method=post>
 							<div class="form-group">
 								<label for="project_name">Project Name</label>
 								<input type="text" class="form-control" name="project_name">
@@ -152,7 +151,7 @@
 						</br>
 						<div class="text-right">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<input type="submit" id="save-project-button" class="btn btn-primary" value="Save changes">
+							<input type="submit" id="save-project-button" class="btn btn-primary {{ 'disabled' if session.logged_in_username == 'demo' }}" value="Save changes">
 						</div>
 					</form>
           		</div>

@@ -9,7 +9,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
     <!-- Font Awesome -->
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
     <!-- MDL -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -34,12 +34,16 @@
         <!-- if not on the login or create account page, show username -->
         {% if request.path != url_for('login') and request.path != url_for('new_account') %}
           <ul class="nav navbar-nav navbar-right">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ session.logged_in_username }} <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            </ul>
-          </li>
+            {% if session.logged_in_username == 'demo' %}
+              <li><a href="{{ url_for('logout') }}">Exit Demo</a></li>
+            {% else %}
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ session.logged_in_username }} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a class="btn" href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+              </li>
+            {% endif %}
         </ul>
         {% endif %}
       </div>
@@ -49,13 +53,11 @@
       {% block body %}{% endblock %}
     </div>
 
-    {% if error %}
-      <div class="error-container">
-        <div class="error">
-          Error: {{ error }}
-        </div>
+    <div class="notification-container">
+      <div class="notification {{ 'hidden' if not error }}">
+        {{ error }}
       </div>
-    {% endif %}
+    </div>
 
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

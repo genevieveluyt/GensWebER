@@ -120,13 +120,14 @@
     margin: 0 15px 0 0;
 }
 
-.error-container {
+.notification-container {
     bottom: 40px;
     position: fixed;
     text-align: center;
     width: 100%;
+    z-index: 100;
 }
-.error-container .error {
+.notification-container .notification {
     background: #323232;
     border-radius: 2px;
     color: #fff;
@@ -134,4 +135,9 @@
     max-width: 568px;
     min-width: 288px;
     padding: 20px;
+}
+
+.demo {
+    display: inline-block;
+    margin: 10px 20px;
 }

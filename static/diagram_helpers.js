@@ -26,8 +26,10 @@ function saveDiagram(url) {
 		contentType: 'application/json',
 		data: dataString,
 		success: function() {
-			// This would be nice as a notification
-			console.log("Diagram layout saved.");
+			$('.notification').text('Diagram layout saved').removeClass('hidden');
+		},
+		error: function(response) {
+			$('.notification').text(response.responseText).removeClass('hidden');
 		}
 	});
 }
