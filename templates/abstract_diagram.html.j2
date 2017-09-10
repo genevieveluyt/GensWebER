@@ -21,7 +21,7 @@
 			}
 
 			document.getElementById('save-layout-button').onclick = function() {
-				saveDiagram("{{ request.path }}");
+				saveDiagram(location.pathname);
 			}
 
 			document.getElementById('expand-button').onclick = function() {

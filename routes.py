@@ -140,15 +140,13 @@ def load_demo_projects(username='demo'):
             'project_name': 'Demo 1',
             'db_name': 'aedes_aegypti_core_48_1b',
             'db_user': 'anonymous',
-            # 'db_pass': '',
             'host': 'ensembldb.ensembl.org',
             'port': '3306'
         },
         {
-            'project_name': 'Demo2',
+            'project_name': 'Demo 2',
             'db_name': 'anas_platyrhynchos_core_73_1',
             'db_user': 'anonymous',
-            # 'db_pass': '',
             'host': 'ensembldb.ensembl.org',
             'port': '3306'
         }

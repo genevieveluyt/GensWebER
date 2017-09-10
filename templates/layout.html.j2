@@ -32,7 +32,7 @@
           <a class="navbar-brand" href="{{ url_for('dashboard') }}">Gen's Web ER</a>
         </div>
         <!-- if not on the login or create account page, show username -->
-        {% if request.path != url_for('login') and request.path != url_for('new_account') %}
+        {% if request.endpoint not in ['login', 'new_account'] %}
           <ul class="nav navbar-nav navbar-right">
             {% if session.logged_in_username == 'demo' %}
               <li><a href="{{ url_for('logout') }}">Exit Demo</a></li>

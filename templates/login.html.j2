@@ -14,7 +14,7 @@
 				<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 form-box">
 					<div class="form-top">
 						<div class="form-top-left">
-							{% if request.path == url_for('login') %}
+							{% if request.endpoint == 'login' %}
 								<h3>Login to our site</h3>
 								<p>Enter your username and password to log on:</p>
 							{% else %}
@@ -27,7 +27,7 @@
 						</div>
 					</div>
 					<div class="form-bottom">
-						<form action="{{ request.path }}" method=post class="login-form">
+						<form action="{{ request.url }}" method=post class="login-form">
 							<div class="form-group">
 								<label class="sr-only" for="form-username">Username</label>
 								<input type="text" name="username" placeholder="Username..." class="form-username form-control" id="form-username">
@@ -36,7 +36,7 @@
 								<label class="sr-only" for="form-password">Password</label>
 								<input type="password" name="password" placeholder="Password..." class="form-password form-control" id="form-password">
 							</div>
-							{% if request.path == url_for('login') %}
+							{% if request.endpoint == 'login' %}
 								<a href="{{ url_for('new_account') }}">Create new account</a>
 								<button type="submit" class="btn">Sign in!</button>
 							{% else %}

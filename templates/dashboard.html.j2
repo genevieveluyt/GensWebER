@@ -21,7 +21,7 @@
 				var data = {old_name: name, new_name:new_name};
 				var dataString = JSON.stringify(data);
 				$.ajax({
-					url: "{{ request.path }}",
+					url: location.pathname,
 					type: 'POST',
 					contentType: 'application/json',
 					data: dataString,
