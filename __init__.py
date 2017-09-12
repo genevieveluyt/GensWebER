@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 app.config.update(dict(
     SECRET_KEY=os.environ['SECRET_KEY'],
-    MONGO_URL=os.environ['MONGO_URL'],
+    MONGO_URI=os.environ['MONGO_URI'],
     MONGO_DBNAME='gensweber'
 ))
 
